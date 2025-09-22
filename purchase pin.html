@@ -1,0 +1,1320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Purchase Activation PIN</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            touch-action: manipulation;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background: white;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            position: relative;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .back-btn {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 8px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+        }
+
+        .back-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .header-content {
+            text-align: center;
+            padding: 10px 60px 0;
+        }
+
+        .header-title {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            padding: 30px 20px;
+            min-height: calc(100vh - 120px);
+        }
+
+        .pin-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            padding: 30px 20px;
+            margin-bottom: 25px;
+            text-align: center;
+            border: 1px solid #f0f0f0;
+        }
+
+        .pin-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .pin-icon svg {
+            width: 28px;
+            height: 28px;
+            stroke: white;
+            stroke-width: 2.5;
+        }
+
+        .pin-card h2 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .pin-description {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 25px;
+        }
+
+        .price-display {
+            background: linear-gradient(135deg, #f8f9ff 0%, #f0f2ff 100%);
+            border: 2px solid #e3e6ff;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .price-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .price-amount {
+            font-size: 28px;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .price-note {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .payment-section {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            padding: 25px 20px;
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title svg {
+            width: 18px;
+            height: 18px;
+            stroke: #667eea;
+        }
+
+        .bank-details {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .bank-detail-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .bank-detail-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .bank-label {
+            font-size: 13px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .bank-value {
+            font-size: 14px;
+            color: #333;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .copy-btn {
+            background: none;
+            border: none;
+            color: #667eea;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .copy-btn:hover {
+            background: #f0f2ff;
+            transform: scale(1.1);
+        }
+
+        .copy-btn svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .upload-section {
+            margin-top: 25px;
+        }
+
+        .file-upload {
+            border: 2px dashed #d1d5db;
+            border-radius: 12px;
+            padding: 30px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #fafbfc;
+            position: relative;
+        }
+
+        .file-upload:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .file-upload.dragover {
+            border-color: #667eea;
+            background: #f0f2ff;
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+        }
+
+        .upload-icon svg {
+            width: 24px;
+            height: 24px;
+            stroke: white;
+            stroke-width: 2;
+        }
+
+        .upload-text {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .upload-subtext {
+            font-size: 12px;
+            color: #666;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .file-preview {
+            display: none;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .file-icon {
+            width: 40px;
+            height: 40px;
+            background: #10b981;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .file-icon svg {
+            width: 20px;
+            height: 20px;
+            stroke: white;
+            stroke-width: 2;
+        }
+
+        .file-details h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 2px;
+        }
+
+        .file-details p {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .remove-file {
+            background: none;
+            border: none;
+            color: #ef4444;
+            cursor: pointer;
+            padding: 4px;
+            margin-left: auto;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .remove-file:hover {
+            background: #fef2f2;
+        }
+
+        .submit-section {
+            margin-top: 30px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .submit-btn .loading {
+            display: none;
+        }
+
+        .submit-btn.loading .loading {
+            display: inline-block;
+            margin-right: 8px;
+        }
+
+        .submit-btn.loading .btn-text {
+            display: none;
+        }
+
+        .loading-spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .success-message {
+            display: none;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            margin-top: 20px;
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .success-message.show {
+            display: block;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .info-section {
+            background: linear-gradient(135deg, #fef3c7 0%, #fbbf24 20%, #fef3c7 100%);
+            border: 1px solid #fbbf24;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .info-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #92400e;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .info-title svg {
+            width: 16px;
+            height: 16px;
+            stroke: #92400e;
+        }
+
+        .info-text {
+            font-size: 13px;
+            color: #92400e;
+            line-height: 1.4;
+        }
+
+        .copy-feedback {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #10b981;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+
+        .copy-feedback.show {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                max-width: 100%;
+            }
+            
+            .main-content {
+                padding: 20px 15px;
+            }
+            
+            .pin-card, .payment-section {
+                padding: 20px 15px;
+            }
+        }
+
+        /* Enhanced loading states */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .loading-card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            max-width: 280px;
+            width: 90%;
+        }
+
+        .loading-card .loading-spinner {
+            width: 32px;
+            height: 32px;
+            margin: 0 auto 15px;
+            border-width: 3px;
+        }
+
+        .payment-methods {
+            margin-bottom: 20px;
+        }
+
+        .payment-method {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .payment-method:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .payment-method.selected {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #f8f9ff 0%, #f0f2ff 100%);
+        }
+
+        .payment-method-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .payment-method-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: white;
+        }
+
+        .payment-method-details h4 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin: 0 0 4px 0;
+        }
+
+        .payment-method-details p {
+            font-size: 13px;
+            color: #666;
+            margin: 0;
+        }
+
+        .payment-method-radio {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ddd;
+            border-radius: 50%;
+            position: relative;
+            transition: border-color 0.3s ease;
+        }
+
+        .payment-method.selected .payment-method-radio {
+            border-color: #667eea;
+        }
+
+        .payment-method.selected .payment-method-radio::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 10px;
+            height: 10px;
+            background: #667eea;
+            border-radius: 50%;
+        }
+
+        .wallet-address {
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            word-break: break-all;
+            background: white;
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #e9ecef;
+        }
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5);
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+}
+
+.plan-option {
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 15px;
+  margin: 10px 0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.plan-option:hover {
+  border-color: #667eea;
+  background: #f8f9ff;
+}
+
+.close-btn {
+  margin-top: 15px;
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <button class="back-btn" onclick="goBack()">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 12H5m7-7-7 7 7 7"/>
+                </svg>
+            </button>
+            <div class="header-content">
+                <h1 class="header-title">Purchase Activation PIN</h1>
+                <p class="header-subtitle">Secure your withdrawals with our PIN system</p>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="pin-card">
+                <div class="pin-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                    </svg>
+                </div>
+                <h2>Activation PIN Required</h2>
+                <p class="pin-description">
+                    To ensure the security of your withdrawal requests, you need an activation PIN. 
+                    Each PIN allows you to securely withdraw your earnings.
+                </p>
+                
+                <div class="price-display" onclick="openPlanModal()" style="cursor:pointer;">
+    <div class="price-label">PIN Cost</div>
+    <div class="price-amount" id="selectedPlanPrice">$10.00</div>
+    <div class="price-note" id="selectedPlanNote">One-time purchase per withdrawal</div>
+</div>
+            </div>
+
+            <div class="info-section">
+                <div class="info-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    Important Instructions
+                </div>
+                <div class="info-text">
+                    After making payment, upload your payment receipt/screenshot. 
+                    Your PIN will be generated and sent to you within 45 minutes after verification.
+                </div>
+            </div>
+
+            <div class="payment-section">
+                <div class="section-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                    </svg>
+                    Choose Payment Method
+                </div>
+                
+                <div class="payment-methods" id="paymentMethods">
+                    <!-- Payment methods will be loaded here -->
+                </div>
+
+                <div class="payment-details" id="paymentDetails" style="display: none;">
+                    <!-- Selected payment details will show here -->
+                </div>
+
+                <div class="upload-section">
+                    <div class="section-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                        </svg>
+                        Upload Payment Receipt
+                    </div>
+                    
+                    <div class="file-upload" id="fileUpload">
+                        <div class="upload-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                            </svg>
+                        </div>
+                        <div class="upload-text">Click to upload receipt</div>
+                        <div class="upload-subtext">PNG, JPG, PDF up to 5MB</div>
+                    </div>
+                    
+                    <input type="file" id="fileInput" accept="image/*,.pdf" />
+                    
+                    <div class="file-preview" id="filePreview">
+                        <div class="file-info">
+                            <div class="file-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                            </div>
+                            <div class="file-details">
+                                <h4 id="fileName">receipt.jpg</h4>
+                                <p id="fileSize">2.5 MB</p>
+                            </div>
+                            <button class="remove-file" onclick="removeFile()">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="submit-section">
+                <button class="submit-btn" id="submitBtn" onclick="submitRequest()" disabled>
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                    </div>
+                    <span class="btn-text">Submit PIN Request</span>
+                </button>
+            </div>
+
+            <div class="success-message" id="successMessage">
+                <h3 style="margin-bottom: 10px;">Request Submitted Successfully!</h3>
+                <p>Your PIN request has been submitted. You will receive your activation PIN within 24 hours after verification.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="copy-feedback" id="copyFeedback">
+        Copied to clipboard!
+    </div>
+
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-card">
+            <div class="loading-spinner"></div>
+            <p>Processing your request...</p>
+        </div>
+    </div>
+<div id="planModal" class="modal-overlay">
+  <div class="modal-content">
+    <h2>Select Withdrawal PIN Plan</h2>
+    <div class="plan-option" onclick="choosePlan('Basic', 10, 'Basic plan - one-time pin')">
+      <h3>Basic</h3>
+      <p>$10</p>
+    </div>
+    <div class="plan-option" onclick="choosePlan('Pro', 25, 'Pro plan - multiple pins')">
+      <h3>Pro</h3>
+      <p>$25</p>
+    </div>
+    <div class="plan-option" onclick="choosePlan('Unlimited', 100, 'Unlimited plan - lifetime pin')">
+      <h3>Unlimited</h3>
+      <p>$100</p>
+    </div>
+    <button class="close-btn" onclick="closePlanModal()">Close</button>
+  </div>
+</div>
+
+    <script>
+        let selectedFile = null;
+        let currentUser = null;
+        let selectedPaymentMethod = null;
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get current user
+            currentUser = localStorage.getItem('currentUser') || sessionStorage.getItem('currentUser');
+            if (!currentUser) {
+                // Redirect to login if no user found
+                window.location.href = 'login.html';
+                return;
+            }
+
+            loadPaymentMethods();
+            setupFileUpload();
+        });
+
+        // Load available payment methods
+        function loadPaymentMethods() {
+            const bankDetails = JSON.parse(localStorage.getItem('pinBankDetails') || '{}');
+            const walletAddresses = JSON.parse(localStorage.getItem('pinWalletAddresses') || '{}');
+            
+            const paymentMethods = document.getElementById('paymentMethods');
+            paymentMethods.innerHTML = '';
+
+            let hasPaymentMethods = false;
+
+            // Add bank transfer option if available
+            if (bankDetails.bankName && bankDetails.accountName && bankDetails.accountNumber) {
+                hasPaymentMethods = true;
+                const bankMethod = createPaymentMethodElement('bank', {
+                    title: 'Bank Transfer',
+                    description: `Transfer to ${bankDetails.bankName}`,
+                    icon: '🏦',
+                    data: bankDetails
+                });
+                paymentMethods.appendChild(bankMethod);
+            }
+
+            // Add crypto wallet options if available
+            const cryptoOptions = {
+                btc: { title: 'Bitcoin (BTC)', icon: '₿', description: 'Pay with Bitcoin' },
+                eth: { title: 'Ethereum (ETH)', icon: 'Ξ', description: 'Pay with Ethereum' },
+                usdtTrc20: { title: 'USDT (TRC20)', icon: '₮', description: 'Tether on TRON network' },
+                usdtErc20: { title: 'USDT (ERC20)', icon: '₮', description: 'Tether on Ethereum network' },
+                bnb: { title: 'Binance Coin (BNB)', icon: '🅱', description: 'Pay with BNB' },
+                ltc: { title: 'Litecoin (LTC)', icon: 'Ł', description: 'Pay with Litecoin' },
+                doge: { title: 'Dogecoin (DOGE)', icon: 'Ð', description: 'Pay with Dogecoin' },
+                usdc: { title: 'USDC (ERC20)', icon: '$', description: 'USD Coin' }
+            };
+
+            Object.entries(cryptoOptions).forEach(([key, crypto]) => {
+                if (walletAddresses[key] && walletAddresses[key].trim()) {
+                    hasPaymentMethods = true;
+                    const cryptoMethod = createPaymentMethodElement(key, {
+                        title: crypto.title,
+                        description: crypto.description,
+                        icon: crypto.icon,
+                        data: { address: walletAddresses[key] }
+                    });
+                    paymentMethods.appendChild(cryptoMethod);
+                }
+            });
+
+            if (!hasPaymentMethods) {
+                paymentMethods.innerHTML = '<div style="text-align: center; color: #666; padding: 20px;">No payment methods configured. Please contact support.</div>';
+            }
+        }
+
+        // Create payment method element
+        function createPaymentMethodElement(type, options) {
+            const methodElement = document.createElement('div');
+            methodElement.className = 'payment-method';
+            methodElement.dataset.type = type;
+            
+            methodElement.innerHTML = `
+                <div class="payment-method-info">
+                    <div class="payment-method-icon">${options.icon}</div>
+                    <div class="payment-method-details">
+                        <h4>${options.title}</h4>
+                        <p>${options.description}</p>
+                    </div>
+                </div>
+                <div class="payment-method-radio"></div>
+            `;
+
+            methodElement.addEventListener('click', () => {
+                selectPaymentMethod(type, options, methodElement);
+            });
+
+            return methodElement;
+        }
+
+        // Select payment method
+        function selectPaymentMethod(type, options, element) {
+            // Remove previous selection
+            document.querySelectorAll('.payment-method').forEach(method => {
+                method.classList.remove('selected');
+            });
+
+            // Select current method
+            element.classList.add('selected');
+            selectedPaymentMethod = { type, options };
+
+            // Show payment details
+            showPaymentDetails(type, options);
+        }
+
+        // Show payment details
+        function showPaymentDetails(type, options) {
+            const paymentDetails = document.getElementById('paymentDetails');
+            
+            if (type === 'bank') {
+                paymentDetails.innerHTML = `
+                    <div class="bank-detail-item">
+                        <span class="bank-label">Bank Name</span>
+                        <div class="bank-value">
+                            <span>${options.data.bankName}</span>
+                            <button class="copy-btn" onclick="copyToClipboard('${options.data.bankName}')">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="bank-detail-item">
+                        <span class="bank-label">Account Name</span>
+                        <div class="bank-value">
+                            <span>${options.data.accountName}</span>
+                            <button class="copy-btn" onclick="copyToClipboard('${options.data.accountName}')">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="bank-detail-item">
+                        <span class="bank-label">Account Number</span>
+                        <div class="bank-value">
+                            <span>${options.data.accountNumber}</span>
+                            <button class="copy-btn" onclick="copyToClipboard('${options.data.accountNumber}')">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="bank-detail-item">
+                        <span class="bank-label">Amount</span>
+                        <div class="bank-value">
+                            <span style="color: #10b981; font-weight: 700;">$${selectedPlan.price}.00</span>
+                        </div>
+                    </div>
+                `;
+            } else {
+                // Crypto payment
+                paymentDetails.innerHTML = `
+                    <div class="bank-detail-item">
+                        <span class="bank-label">Currency</span>
+                        <div class="bank-value">
+                            <span>${options.title}</span>
+                        </div>
+                    </div>
+                    <div class="bank-detail-item">
+                        <span class="bank-label">Wallet Address</span>
+                        <div class="bank-value">
+                            <div class="wallet-address">${options.data.address}</div>
+                            <button class="copy-btn" onclick="copyToClipboard('${options.data.address}')">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="bank-detail-item">
+                        <span class="bank-label">Amount</span>
+                        <div class="bank-value">
+                            <span style="color: #10b981; font-weight: 700;">$${selectedPlan.price}.00 USD equivalent</span>
+                        </div>
+                    </div>
+                    <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px; padding: 12px; margin-top: 15px;">
+                        <div style="font-size: 12px; color: #856404;">
+                            <strong>Important:</strong> Send exactly $${selectedPlan.price}.00 USD equivalent in ${options.title} to the address above. 
+                            Check current exchange rates before sending.
+                        </div>
+                    </div>
+                `;
+            }
+
+            paymentDetails.style.display = 'block';
+        }
+
+        // Setup file upload functionality
+        function setupFileUpload() {
+            const fileUpload = document.getElementById('fileUpload');
+            const fileInput = document.getElementById('fileInput');
+            const submitBtn = document.getElementById('submitBtn');
+
+            // Click to upload
+            fileUpload.addEventListener('click', () => {
+                fileInput.click();
+            });
+
+            // File selection
+            fileInput.addEventListener('change', handleFileSelect);
+
+            // Drag and drop
+            fileUpload.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                fileUpload.classList.add('dragover');
+            });
+
+            fileUpload.addEventListener('dragleave', () => {
+                fileUpload.classList.remove('dragover');
+            });
+
+            fileUpload.addEventListener('drop', (e) => {
+                e.preventDefault();
+                fileUpload.classList.remove('dragover');
+                
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    handleFile(files[0]);
+                }
+            });
+        }
+
+        function handleFileSelect(e) {
+            const file = e.target.files[0];
+            if (file) {
+                handleFile(file);
+            }
+        }
+
+        function handleFile(file) {
+            // Validate file
+            const maxSize = 5 * 1024 * 1024; // 5MB
+            const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'];
+
+            if (!allowedTypes.includes(file.type)) {
+                alert('Please upload a valid image (PNG, JPG) or PDF file.');
+                return;
+            }
+
+            if (file.size > maxSize) {
+                alert('File size must be less than 5MB.');
+                return;
+            }
+
+            selectedFile = file;
+            showFilePreview(file);
+            document.getElementById('submitBtn').disabled = false;
+        }
+
+        function showFilePreview(file) {
+            const filePreview = document.getElementById('filePreview');
+            const fileName = document.getElementById('fileName');
+            const fileSize = document.getElementById('fileSize');
+            const fileUpload = document.getElementById('fileUpload');
+
+            fileName.textContent = file.name;
+            fileSize.textContent = formatFileSize(file.size);
+            
+            filePreview.style.display = 'block';
+            fileUpload.style.display = 'none';
+        }
+
+        function removeFile() {
+            selectedFile = null;
+            document.getElementById('filePreview').style.display = 'none';
+            document.getElementById('fileUpload').style.display = 'block';
+            document.getElementById('fileInput').value = '';
+            document.getElementById('submitBtn').disabled = true;
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // FIXED: Copy to clipboard function
+        function copyToClipboard(textToCopy) {
+            if (textToCopy && textToCopy !== 'Loading...' && textToCopy !== 'Contact Support') {
+                // Modern browsers
+                if (navigator.clipboard && window.isSecureContext) {
+                    navigator.clipboard.writeText(textToCopy).then(() => {
+                        showCopyFeedback();
+                    }).catch((err) => {
+                        console.error('Failed to copy with clipboard API:', err);
+                        fallbackCopyTextToClipboard(textToCopy);
+                    });
+                } else {
+                    // Fallback for older browsers or non-secure contexts
+                    fallbackCopyTextToClipboard(textToCopy);
+                }
+            }
+        }
+
+        // Fallback copy method for older browsers
+        function fallbackCopyTextToClipboard(text) {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            
+            // Avoid scrolling to bottom
+            textArea.style.position = 'fixed';
+            textArea.style.top = '0';
+            textArea.style.left = '0';
+            textArea.style.width = '2em';
+            textArea.style.height = '2em';
+            textArea.style.padding = '0';
+            textArea.style.border = 'none';
+            textArea.style.outline = 'none';
+            textArea.style.boxShadow = 'none';
+            textArea.style.background = 'transparent';
+            
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    showCopyFeedback();
+                } else {
+                    console.error('Fallback: Copying text command was unsuccessful');
+                }
+            } catch (err) {
+                console.error('Fallback: Oops, unable to copy', err);
+            }
+            
+            document.body.removeChild(textArea);
+        }
+
+        function showCopyFeedback() {
+            const feedback = document.getElementById('copyFeedback');
+            feedback.classList.add('show');
+            setTimeout(() => {
+                feedback.classList.remove('show');
+            }, 2000);
+        }
+
+        async function submitRequest() {
+            if (!selectedFile) {
+                alert('Please upload a payment receipt first.');
+                return;
+            }
+
+            if (!selectedPaymentMethod) {
+                alert('Please select a payment method first.');
+                return;
+            }
+
+            const submitBtn = document.getElementById('submitBtn');
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            
+            // Show loading state
+            submitBtn.classList.add('loading');
+            submitBtn.disabled = true;
+            loadingOverlay.style.display = 'flex';
+
+            // Simulate processing time
+            await new Promise(resolve => setTimeout(resolve, 2000));
+
+            try {
+                // Create order ID
+                const orderId = 'PIN-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5);
+                
+                // Store file as base64 (for demo purposes - in production, upload to server)
+                const fileDataUrl = await fileToDataUrl(selectedFile);
+                
+                // Save PIN request to localStorage
+                const pinRequests = JSON.parse(localStorage.getItem('pinPaymentRequests') || '[]');
+                const newRequest = {
+    orderId: orderId,
+    user: currentUser,
+    amount: selectedPlan.price,
+    currency: 'USD',
+    status: 'pending',
+    date: Date.now(),
+    slip: fileDataUrl,
+    fileName: selectedFile.name,
+    fileSize: selectedFile.size,
+    paymentMethod: selectedPaymentMethod.type,
+    plan: selectedPlan.name // ✅ add this line
+};
+                
+                pinRequests.push(newRequest);
+                localStorage.setItem('pinPaymentRequests', JSON.stringify(pinRequests));
+                
+                // Hide loading
+                loadingOverlay.style.display = 'none';
+                submitBtn.classList.remove('loading');
+                
+                // Show success message
+                document.getElementById('successMessage').classList.add('show');
+                
+                // Hide form
+                document.querySelector('.payment-section').style.display = 'none';
+                document.querySelector('.submit-section').style.display = 'none';
+                document.querySelector('.info-section').style.display = 'none';
+                
+                // Auto redirect after 5 seconds
+                setTimeout(() => {
+                    goBack();
+                }, 5000);
+                
+            } catch (error) {
+                console.error('Error submitting request:', error);
+                loadingOverlay.style.display = 'none';
+                submitBtn.classList.remove('loading');
+                submitBtn.disabled = false;
+                alert('Error submitting request. Please try again.');
+            }
+        }
+
+        function fileToDataUrl(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function goBack() {
+            // Check if we came from dashboard
+            if (document.referrer.includes('dashboard.html') || sessionStorage.getItem('fromDashboard')) {
+                window.location.href = 'dashboard.html';
+            } else {
+                // Fallback to dashboard
+                window.location.href = 'dashboard.html';
+            }
+        }
+
+        // Add some enhanced visual feedback
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add smooth scroll behavior
+            document.documentElement.style.scrollBehavior = 'smooth';
+            
+            // Add entrance animations
+            const elements = document.querySelectorAll('.pin-card, .payment-section, .info-section');
+            elements.forEach((el, index) => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    el.style.transition = 'all 0.6s ease';
+                    el.style.opacity = '1';
+                    el.style.transform = 'translateY(0)';
+                }, index * 150);
+            });
+        });
+
+        // Add click effects to buttons
+        document.addEventListener('click', function(e) {
+            if (e.target.matches('.copy-btn') || e.target.closest('.copy-btn')) {
+                const btn = e.target.closest('.copy-btn') || e.target;
+                btn.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    btn.style.transform = 'scale(1)';
+                }, 150);
+            }
+        });
+
+        // Prevent accidental page refresh
+        window.addEventListener('beforeunload', function(e) {
+            if (selectedFile && !document.getElementById('successMessage').classList.contains('show')) {
+                e.preventDefault();
+                e.returnValue = '';
+                return 'You have an unsaved file upload. Are you sure you want to leave?';
+            }
+        });
+let selectedPlan = { name: "Default", price: 10, note: "One-time purchase per withdrawal" };
+
+function openPlanModal() {
+    document.getElementById('planModal').style.display = 'flex';
+}
+
+function closePlanModal() {
+    document.getElementById('planModal').style.display = 'none';
+}
+
+function choosePlan(name, price, note) {
+    selectedPlan = { name, price, note };
+    document.getElementById('selectedPlanPrice').textContent = `$${price}.00`;
+    document.getElementById('selectedPlanNote').textContent = note;
+    closePlanModal();
+}
+    </script>
+</body>
+</html>

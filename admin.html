@@ -1,0 +1,1827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>Admin Panel</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+        }
+        .login-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .login-box {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            width: 320px;
+            text-align: center;
+        }
+        .login-box h2 {
+            margin: 0 0 20px;
+        }
+        .login-box input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .login-box button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            background-color: #000;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .login-box .error {
+            color: red;
+            margin-top: 10px;
+            font-size: 14px;
+            height: 15px;
+        }
+        .admin-panel {
+            display: none;
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: #fff;
+            border-bottom: 1px solid #eee;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 600;
+        }
+        #logoutBtn {
+            padding: 6px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background: #f8f9fa;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.2s;
+        }
+        #logoutBtn:hover {
+            background: #e9ecef;
+        }
+        .search-container {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+        }
+        .search-wrapper {
+            position: relative;
+        }
+        .search-input {
+            width: 100%;
+            padding: 12px 16px 12px 45px;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            font-size: 14px;
+            background: #f8f9fa;
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: #007bff;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+        }
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 18px;
+            height: 18px;
+            color: #666;
+            pointer-events: none;
+        }
+        .users-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .user-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            position: relative;
+        }
+        .user-item:hover {
+            background-color: #f8f9fa;
+        }
+        .user-item:last-child {
+            border-bottom: none;
+        }
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+            flex-shrink: 0;
+        }
+        .user-details {
+            flex: 1;
+            min-width: 0;
+        }
+        .user-name {
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+            margin: 0 0 4px 0;
+        }
+        .user-info {
+            font-size: 14px;
+            color: #666;
+            margin: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .user-meta {
+            text-align: right;
+            color: #999;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+        .pending-badge {
+            background-color: #ff6b6b;
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            margin-left: 8px;
+        }
+        .no-users {
+            padding: 40px 20px;
+            text-align: center;
+            color: #666;
+            font-style: italic;
+        }
+        .user-detail-page {
+            display: none;
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+        }
+        .detail-header {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            background: #f8f9fa;
+        }
+        .back-btn {
+            background: none;
+            border: none;
+            padding: 8px;
+            margin-right: 15px;
+            cursor: pointer;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .back-btn:hover {
+            background: #e9ecef;
+        }
+        .detail-user-info {
+            display: flex;
+            align-items: center;
+        }
+        .detail-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 20px;
+            font-weight: bold;
+            color: white;
+        }
+        .detail-user-name {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0 0 4px 0;
+        }
+        .detail-user-status {
+            font-size: 14px;
+            color: #666;
+            margin: 0;
+        }
+        .balance-section {
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+        }
+        .balance-label {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+        .balance-amount {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .balance-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        .balance-btn {
+            padding: 8px 16px;
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 20px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .balance-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        .actions-section {
+            padding: 20px;
+        }
+        .action-group {
+            margin-bottom: 25px;
+        }
+        .action-group h3 {
+            margin: 0 0 15px 0;
+            font-size: 16px;
+            color: #333;
+        }
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .action-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 16px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            color: #333;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .action-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .generated-pin {
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 15px;
+            text-align: center;
+            font-family: monospace;
+            font-size: 18px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            color: #333;
+            margin: 15px 0;
+        }
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 400px;
+            padding: 20px;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+        }
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+        .close-btn:hover {
+            background: #f0f0f0;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #333;
+        }
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #333;
+            border: 1px solid #ddd;
+        }
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+        .action-btn.approve {
+            background: #28a745;
+            color: white;
+            border-color: #28a745;
+        }
+        .action-btn.reject {
+            background: #dc3545;
+            color: white;
+            border-color: #dc3545;
+        }
+        .action-btn.primary {
+            background: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+        .action-btn svg {
+            width: 16px;
+            height: 16px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+        }
+        #transactionList {
+            max-height: 260px;
+            overflow-y: auto;
+        }
+        #transactionSelectModal .modal-content {
+            max-height: 400px;
+            overflow: hidden;
+        }
+        /* Add HR styling for modal items */
+        .modal-item hr {
+            border: 0;
+            border-top: 1px solid #eee;
+            margin: 8px 0;
+        }
+/* Add this CSS to your admin.html <style> section */
+
+.admin-currency-selector {
+    margin-bottom: 15px;
+}
+
+.admin-currency-btn {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    font-size: 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.admin-currency-btn:hover {
+    border-color: #007bff;
+}
+
+.admin-currency-btn:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+}
+
+.admin-currency-options {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    max-height: 200px;
+    overflow-y: auto;
+    display: none;
+    margin-top: 2px;
+}
+
+.currency-option {
+    padding: 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.2s;
+}
+
+.currency-option:last-child {
+    border-bottom: none;
+}
+
+.currency-option:hover {
+    background-color: #f5f5f5;
+}
+
+.currency-option:active {
+    background-color: #e3f2fd;
+}
+
+.selected-currency-display {
+    display: flex;
+    align-items: center;
+    font-weight: 500;
+}
+
+.conversion-info {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 15px;
+    font-size: 13px;
+    color: #495057;
+}
+
+.conversion-info .usd-equivalent {
+    font-weight: 600;
+    color: #28a745;
+}
+
+/* Enhanced modal styling for currency selection */
+#addFundsModal .modal-content,
+#removeFundsModal .modal-content {
+    max-width: 420px;
+    width: 95%;
+}
+
+#addFundsModal .form-group input,
+#removeFundsModal .form-group input {
+    font-size: 16px;
+    padding: 12px;
+    border-radius: 8px;
+    border: 2px solid #e9ecef;
+    transition: border-color 0.3s ease;
+}
+
+#addFundsModal .form-group input:focus,
+#removeFundsModal .form-group input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+}
+
+/* Currency flag styling */
+.currency-flag {
+    font-size: 18px;
+    margin-right: 8px;
+    display: inline-block;
+    width: 24px;
+    text-align: center;
+}
+
+/* Real-time rate indicator */
+.rate-indicator {
+    display: inline-flex;
+    align-items: center;
+    font-size: 11px;
+    color: #28a745;
+    margin-top: 2px;
+}
+
+.rate-indicator::before {
+    content: "●";
+    color: #28a745;
+    margin-right: 4px;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 480px) {
+    .admin-currency-options {
+        max-height: 150px;
+    }
+    
+    .currency-option {
+        padding: 10px;
+    }
+    
+    .conversion-info {
+        padding: 10px;
+        font-size: 12px;
+    }
+}
+.btn {
+  display: inline-block;
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+  color: #fff;
+}
+.btn {
+  display: inline-block;
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+}
+    </style>
+</head>
+<body>
+    <div id="loginView" class="login-container">
+        <div class="login-box">
+            <h2>Admin Access</h2>
+            <form id="adminLoginForm">
+                <input type="password" id="adminPassword" placeholder="Password" required>
+                <button type="submit">Login</button>
+                <p id="loginError" class="error"></p>
+            </form>
+        </div>
+    </div>
+    <div id="adminPanel" class="admin-panel">
+        <header class="header">
+            <h1>User Management</h1>
+            <button id="logoutBtn">Logout</button>
+        </header>
+        <div class="search-container">
+            <div class="search-wrapper">
+                <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" id="searchInput" class="search-input" placeholder="Search users...">
+            </div>
+        </div>
+        <ul class="users-list" id="usersList"></ul>
+    </div>
+    <div id="userDetailPage" class="user-detail-page">
+        <div class="detail-header">
+            <button class="back-btn" id="backToList">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5m7-7-7 7 7 7"/>
+                </svg>
+            </button>
+            <div class="detail-user-info">
+                <div class="detail-avatar" id="detailAvatar"></div>
+                <div>
+                    <div class="detail-user-name" id="detailUserName"></div>
+                    <div class="detail-user-status" id="detailUserStatus"></div>
+                </div>
+            </div>
+        </div>
+        <div class="balance-section">
+            <div class="balance-label">Current Balance</div>
+            <div class="balance-amount" id="userBalance">$0.00</div>
+            <div class="balance-actions">
+                <button class="balance-btn" id="addFundsBtn">Add Funds</button>
+                <button class="balance-btn" id="removeFundsBtn">Remove Funds</button>
+            </div>
+        </div>
+        <div class="actions-section">
+            <div class="action-group" id="withdrawalActions" style="display: none;">
+                <h3>Withdrawal Request</h3>
+                <div class="action-buttons">
+                    <button class="action-btn approve" id="approveBtn">
+                        <svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+                        Approve
+                    </button>
+                    <button class="action-btn reject" id="rejectBtn">
+                        <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                        Reject
+                    </button>
+                </div>
+            </div>
+            <div class="action-group">
+                <h3>PIN Management</h3>
+                <div class="action-buttons">
+                    <button class="action-btn primary" id="generatePinBtn">
+                        <svg viewBox="0 0 24 24"><path d="M12 2v20m8-10H4"/></svg>
+                        Generate PIN
+                    </button>
+                    <button class="action-btn" id="sendPinBtn">
+                        <svg viewBox="0 0 24 24"><path d="M22 2L2 8.667v6.666L22 22 17.778 12 22 2Z"/></svg>
+                        Send PIN
+                    </button>
+                </div>
+            </div>
+            <div class="action-group">
+                <h3>Communication</h3>
+                <div class="action-buttons" style="grid-template-columns: 1fr;">
+                    <button class="action-btn" id="sendMessageBtn">
+                        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                        Send Message
+                    </button>
+                </div>
+            </div>
+            <div class="action-group">
+                <h3>PIN Payment Requests</h3>
+                <div id="pinPaymentRequestsSection"></div>
+            </div>
+            <div class="action-group">
+    <h3>Payment Methods for PIN Purchase</h3>
+    <div id="bankDetailsDisplay"></div>
+    <div id="walletAddressesDisplay" style="margin-top: 15px;"></div>
+    <div style="margin-top: 15px; display: flex; gap: 10px;">
+        <button class="btn btn-primary" onclick="openModal('editBankDetailsModal')">Edit Bank Details</button>
+        <button class="btn btn-primary" onclick="openModal('editWalletAddressesModal')">Edit Wallet Addresses</button>
+    </div>
+</div>
+    <div id="addFundsModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add Funds</h3>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="form-group">
+                <label>Amount (USD)</label>
+                <input type="number" id="addAmount" placeholder="0.00" step="0.01" min="0">
+            </div>
+            <div class="form-actions">
+                <button class="btn btn-secondary" onclick="closeModal('addFundsModal')">Cancel</button>
+                <button class="btn btn-primary" id="confirmAddFunds">Add Funds</button>
+            </div>
+        </div>
+    </div>
+    <div id="removeFundsModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Remove Funds</h3>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="form-group">
+                <label>Amount (USD)</label>
+                <input type="number" id="removeAmount" placeholder="0.00" step="0.01" min="0">
+            </div>
+            <div class="form-actions">
+                <button class="btn btn-secondary" onclick="closeModal('removeFundsModal')">Cancel</button>
+                <button class="btn btn-primary" id="confirmRemoveFunds">Remove Funds</button>
+            </div>
+        </div>
+    </div>
+    <div id="generatePinModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Generate PIN</h3>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="generated-pin" id="generatedPin">----</div>
+            <div class="form-actions">
+                <button class="btn btn-secondary" onclick="closeModal('generatePinModal')">Close</button>
+                <button class="btn btn-primary" id="copyPin">Copy PIN</button>
+            </div>
+        </div>
+    </div>
+    <div id="sendMessageModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Send Message</h3>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="form-group">
+                <label>Message Title</label>
+                <input type="text" id="messageTitle" placeholder="Enter message title">
+            </div>
+            <div class="form-group">
+                <label>Message Content</label>
+                <textarea id="messageContent" placeholder="Enter your message here..."></textarea>
+            </div>
+            <div class="form-actions">
+                <button class="btn btn-secondary" onclick="closeModal('sendMessageModal')">Cancel</button>
+                <button class="btn btn-primary" id="confirmSendMessage">Send Message</button>
+            </div>
+        </div>
+    </div>
+    <div id="transactionSelectModal" class="modal-overlay">
+        <div class="modal-content" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); border-radius:12px; width:320px; max-width:95%; text-align:center; max-height:400px; overflow:hidden;">
+            <div class="modal-header">
+                <h3 class="modal-title" id="transactionModalTitle">Select Transaction</h3>
+                <button class="close-btn" onclick="closeModal('transactionSelectModal')">&times;</button>
+            </div>
+            <div id="transactionList" style="margin-top:10px; max-height:260px; overflow-y:auto;"></div>
+        </div>
+    </div>
+    <div id="sendPinPaymentDetailsModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Send PIN Payment Details</h3>
+                <button class="close-btn" onclick="closeModal('sendPinPaymentDetailsModal')">&times;</button>
+            </div>
+            <div class="form-group">
+                <label>PIN Code</label>
+                <input type="text" id="adminPinCode" placeholder="Enter PIN code">
+            </div>
+            <div class="form-group">
+                <label>Message to User</label>
+                <textarea id="adminPinMessage" placeholder="Message to user..."></textarea>
+            </div>
+            <div class="form-actions">
+                <button class="btn btn-secondary" onclick="closeModal('sendPinPaymentDetailsModal')">Cancel</button>
+                <button class="btn btn-primary" id="confirmSendPinPaymentDetails">Send Details</button>
+            </div>
+        </div>
+    </div>
+    <div id="editBankDetailsModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Edit Bank Details</h3>
+                <button class="close-btn" onclick="closeModal('editBankDetailsModal')">&times;</button>
+            </div>
+            <div class="form-group">
+                <label>Bank Name</label>
+                <input type="text" id="editBankName" placeholder="Bank Name">
+            </div>
+            <div class="form-group">
+                <label>Account Name</label>
+                <input type="text" id="editAccountName" placeholder="Account Name">
+            </div>
+            <div class="form-group">
+                <label>Account Number</label>
+                <input type="text" id="editAccountNumber" placeholder="Account Number">
+            </div>
+            <div class="form-actions">
+                <button class="btn btn-secondary" onclick="closeModal('editBankDetailsModal')">Cancel</button>
+                <button class="btn btn-primary" id="saveBankDetailsBtn">Save</button>
+            </div>
+        </div>
+    </div>
+<div id="editWalletAddressesModal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 500px;">
+        <div class="modal-header">
+            <h3 class="modal-title">Edit Wallet Addresses</h3>
+            <button class="close-btn" onclick="closeModal('editWalletAddressesModal')">&times;</button>
+        </div>
+        <div style="max-height: 400px; overflow-y: auto;">
+            <div class="form-group">
+                <label>Bitcoin (BTC)</label>
+                <input type="text" id="editBtcAddress" placeholder="Bitcoin wallet address">
+            </div>
+            <div class="form-group">
+                <label>Ethereum (ETH)</label>
+                <input type="text" id="editEthAddress" placeholder="Ethereum wallet address">
+            </div>
+            <div class="form-group">
+                <label>Tether USDT (TRC20)</label>
+                <input type="text" id="editUsdtTrc20Address" placeholder="USDT TRC20 wallet address">
+            </div>
+            <div class="form-group">
+                <label>Tether USDT (ERC20)</label>
+                <input type="text" id="editUsdtErc20Address" placeholder="USDT ERC20 wallet address">
+            </div>
+            <div class="form-group">
+                <label>Binance Coin (BNB)</label>
+                <input type="text" id="editBnbAddress" placeholder="BNB wallet address">
+            </div>
+            <div class="form-group">
+                <label>Litecoin (LTC)</label>
+                <input type="text" id="editLtcAddress" placeholder="Litecoin wallet address">
+            </div>
+            <div class="form-group">
+                <label>Dogecoin (DOGE)</label>
+                <input type="text" id="editDogeAddress" placeholder="Dogecoin wallet address">
+            </div>
+            <div class="form-group">
+                <label>USDC (ERC20)</label>
+                <input type="text" id="editUsdcAddress" placeholder="USDC wallet address">
+            </div>
+        </div>
+        <div class="form-actions">
+            <button class="btn btn-secondary" onclick="closeModal('editWalletAddressesModal')">Cancel</button>
+            <button class="btn btn-primary" id="saveWalletAddressesBtn">Save Addresses</button>
+        </div>
+    </div>
+</div>
+
+    <div style="margin-top:20px; text-align:center;">
+  <button class="btn btn-danger" onclick="rejectPinPrompt()">Reject a PIN Request</button>
+</div>
+<script>
+const loginView = document.getElementById('loginView');
+const adminPanel = document.getElementById('adminPanel');
+const userDetailPage = document.getElementById('userDetailPage');
+const adminLoginForm = document.getElementById('adminLoginForm');
+const adminPasswordInput = document.getElementById('adminPassword');
+const loginError = document.getElementById('loginError');
+const usersList = document.getElementById('usersList');
+const searchInput = document.getElementById('searchInput');
+const logoutBtn = document.getElementById('logoutBtn');
+const backToList = document.getElementById('backToList');
+const ADMIN_PASSWORD = "admin123";
+let allUsers = [];
+let filteredUsers = [];
+let currentUser = null;
+const avatarColors = [
+    '#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#ffeaa7',
+    '#dda0dd', '#98d8c8', '#fd79a8', '#fdcb6e', '#6c5ce7'
+];
+
+function getAvatarColor(username) {
+    let hash = 0;
+    for (let i = 0; i < username.length; i++) {
+        hash = username.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return avatarColors[Math.abs(hash) % avatarColors.length];
+}
+
+function checkAuth() {
+    if (sessionStorage.getItem('isAdminLoggedIn') === 'true') {
+        loginView.style.display = 'none';
+        adminPanel.style.display = 'block';
+        userDetailPage.style.display = 'none';
+        loadUsers();
+    } else {
+        loginView.style.display = 'flex';
+        adminPanel.style.display = 'none';
+        userDetailPage.style.display = 'none';
+    }
+}
+
+adminLoginForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const password = adminPasswordInput.value;
+    if (password === ADMIN_PASSWORD) {
+        sessionStorage.setItem('isAdminLoggedIn', 'true');
+        checkAuth();
+        loginError.textContent = '';
+    } else {
+        loginError.textContent = 'Invalid password';
+    }
+});
+
+logoutBtn.addEventListener('click', () => {
+    sessionStorage.removeItem('isAdminLoggedIn');
+    checkAuth();
+});
+
+function loadUsers() {
+    allUsers = [];
+    const pendingWithdrawals = JSON.parse(localStorage.getItem('pendingWithdrawals') || '[]');
+    const pinRequests = JSON.parse(localStorage.getItem('pinPaymentRequests') || '[]');
+    const users = JSON.parse(localStorage.getItem('users') || "{}"); // get valid usernames
+
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+
+        // skip non-user keys
+        if (["users", "currentUser", "withdrawalApproval", "pendingWithdrawals", "pinPaymentRequests", "pinBankDetails"].includes(key)) {
+            continue;
+        }
+
+        try {
+            const item = localStorage.getItem(key);
+            const userData = JSON.parse(item);
+
+            // only accept users that still exist in the login DB
+            if (userData && typeof userData === 'object' && userData.username && users[key]) {
+                // Withdrawal
+                const pendingRequest = pendingWithdrawals.find(req =>
+                    req.username && req.username.toLowerCase() === key.toLowerCase()
+                );
+                // PIN payment
+                const pendingPinRequest = pinRequests.find(req =>
+                    req.user && req.user.toLowerCase() === key.toLowerCase() && req.status === 'pending'
+                );
+
+                allUsers.push({
+                    key: key,
+                    username: userData.username,
+                    balance: userData.balance || 0,
+                    currency: userData.currency || { code: 'USD', symbol: '$', rate: 1 },
+                    lastActive: 'Today',
+                    hasPendingWithdrawal: !!pendingRequest,
+                    pendingRequest: pendingRequest,
+                    hasPendingPinRequest: !!pendingPinRequest,
+                    pendingPinRequest: pendingPinRequest
+                });
+            }
+        } catch (e) {
+            console.warn("Skipping invalid entry:", key, e);
+        }
+    }
+
+    // Sort: withdrawal > pin > regular
+    filteredUsers = [...allUsers].sort((a, b) => {
+        if (a.hasPendingWithdrawal && !b.hasPendingWithdrawal) return -1;
+        if (!a.hasPendingWithdrawal && b.hasPendingWithdrawal) return 1;
+        if (a.hasPendingPinRequest && !b.hasPendingPinRequest) return -1;
+        if (!a.hasPendingPinRequest && b.hasPendingPinRequest) return 1;
+        return a.username.localeCompare(b.username);
+    });
+    renderUsers();
+}
+
+function renderUsers() {
+    usersList.innerHTML = '';
+    if (filteredUsers.length === 0) {
+        usersList.innerHTML = '<li class="no-users">No users found</li>';
+        return;
+    }
+    filteredUsers.forEach(user => {
+        const userItem = document.createElement('li');
+        userItem.className = 'user-item';
+        userItem.onclick = () => showUserDetail(user);
+        const avatarColor = getAvatarColor(user.username);
+        const displayBalance = `${user.currency.symbol}${(user.balance * user.currency.rate).toFixed(2)}`;
+        userItem.innerHTML = `
+            <div class="user-avatar" style="background-color: ${avatarColor}">
+                ${user.username.charAt(0).toUpperCase()}
+            </div>
+            <div class="user-details">
+                <div class="user-name">${user.username}</div>
+                <div class="user-info">Balance: ${displayBalance} • ${user.lastActive}</div>
+            </div>
+            <div class="user-meta">
+                ${user.hasPendingWithdrawal ? '<span class="pending-badge">Withdrawal</span>' : ''}
+                ${(!user.hasPendingWithdrawal && user.hasPendingPinRequest) ? '<span class="pending-badge" style="background-color: #ffa502;">PIN</span>' : ''}
+            </div>
+        `;
+        usersList.appendChild(userItem);
+    });
+}
+
+function showUserDetail(user) {
+    currentUser = user;
+    adminPanel.style.display = 'none';
+    userDetailPage.style.display = 'block';
+    const detailAvatar = document.getElementById('detailAvatar');
+    const detailUserName = document.getElementById('detailUserName');
+    const detailUserStatus = document.getElementById('detailUserStatus');
+    const userBalance = document.getElementById('userBalance');
+    const withdrawalActions = document.getElementById('withdrawalActions');
+    const avatarColor = getAvatarColor(user.username);
+    detailAvatar.style.backgroundColor = avatarColor;
+    detailAvatar.textContent = user.username.charAt(0).toUpperCase();
+    detailUserName.textContent = user.username;
+    detailUserStatus.textContent = user.hasPendingWithdrawal ? 'Has pending withdrawal' : 'Active user';
+    const displayBalance = `${user.currency.symbol}${(user.balance * user.currency.rate).toFixed(2)}`;
+    userBalance.textContent = displayBalance;
+    if (user.hasPendingWithdrawal) {
+        withdrawalActions.style.display = 'block';
+    } else {
+        withdrawalActions.style.display = 'none';
+    }
+    renderPinPaymentRequests(user);
+    renderBankDetails();
+renderWalletAddresses(); // Add this line
+}
+
+backToList.addEventListener('click', () => {
+    userDetailPage.style.display = 'none';
+    adminPanel.style.display = 'block';
+    currentUser = null;
+    loadUsers();
+});
+
+searchInput.addEventListener('input', (e) => {
+    const query = e.target.value.trim().toLowerCase();
+    if (!query) {
+        filteredUsers = [...allUsers];
+    } else {
+        filteredUsers = allUsers.filter(user =>
+            user.username.toLowerCase().includes(query)
+        );
+    }
+    renderUsers();
+});
+
+function openModal(modalId) {
+    const modal = document.getElementById(modalId);
+    modal.style.display = 'block';
+    if (modalId === 'editBankDetailsModal') {
+        const details = JSON.parse(localStorage.getItem('pinBankDetails') || '{}');
+        document.getElementById('editBankName').value = details.bankName || "";
+        document.getElementById('editAccountName').value = details.accountName || "";
+        document.getElementById('editAccountNumber').value = details.accountNumber || "";
+    }
+}
+function closeModal(modalId) {
+    document.getElementById(modalId).style.display = 'none';
+}
+document.querySelectorAll('.close-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        const modal = e.target.closest('.modal-overlay');
+        if (modal) modal.style.display = 'none';
+    });
+});
+document.getElementById('addFundsBtn').addEventListener('click', () => openModal('addFundsModal'));
+// Replace the Enhanced Add Funds Confirmation section in your admin.html with this:
+
+// Enhanced Add Funds Confirmation - CORRECTED VERSION
+document.getElementById('confirmAddFunds').addEventListener('click', () => {
+    const amount = parseFloat(document.getElementById('addAmount').value);
+    if (amount && amount > 0 && currentUser) {
+        // Convert entered amount to USD for storage (balances are stored in USD)
+        const usdAmount = amount / selectedAdminCurrency.rate;
+        
+        const userData = JSON.parse(localStorage.getItem(currentUser.key));
+        userData.balance = (userData.balance || 0) + usdAmount;
+        localStorage.setItem(currentUser.key, JSON.stringify(userData));
+        
+        currentUser.balance = userData.balance;
+        const displayBalance = `${currentUser.currency.symbol}${(currentUser.balance * currentUser.currency.rate).toFixed(2)}`;
+        document.getElementById('userBalance').textContent = displayBalance;
+        
+        // Show success message - clarify what was actually added
+        const successMsg = `Added ${selectedAdminCurrency.symbol}${amount.toFixed(2)} (≈ ${usdAmount.toFixed(2)} USD) to ${currentUser.username}'s account`;
+        alert(successMsg);
+        
+        closeModal('addFundsModal');
+        document.getElementById('addAmount').value = '';
+        selectedAdminCurrency = adminCurrencies[0]; // Reset to USD
+    }
+if (modalId === 'editWalletAddressesModal') {
+    const wallets = JSON.parse(localStorage.getItem('pinWalletAddresses') || '{}');
+    document.getElementById('editBtcAddress').value = wallets.btc || "";
+    document.getElementById('editEthAddress').value = wallets.eth || "";
+    document.getElementById('editUsdtTrc20Address').value = wallets.usdtTrc20 || "";
+    document.getElementById('editUsdtErc20Address').value = wallets.usdtErc20 || "";
+    document.getElementById('editBnbAddress').value = wallets.bnb || "";
+    document.getElementById('editLtcAddress').value = wallets.ltc || "";
+    document.getElementById('editDogeAddress').value = wallets.doge || "";
+    document.getElementById('editUsdcAddress').value = wallets.usdc || "";
+}
+});
+
+// Enhanced Remove Funds Confirmation - CORRECTED VERSION
+document.getElementById('confirmRemoveFunds').addEventListener('click', () => {
+    const amount = parseFloat(document.getElementById('removeAmount').value);
+    if (amount && amount > 0 && currentUser) {
+        // Convert entered amount to USD for storage (balances are stored in USD)
+        const usdAmount = amount / selectedAdminCurrency.rate;
+        
+        const userData = JSON.parse(localStorage.getItem(currentUser.key));
+        const newBalance = Math.max(0, (userData.balance || 0) - usdAmount);
+        userData.balance = newBalance;
+        localStorage.setItem(currentUser.key, JSON.stringify(userData));
+        
+        currentUser.balance = userData.balance;
+        const displayBalance = `${currentUser.currency.symbol}${(currentUser.balance * currentUser.currency.rate).toFixed(2)}`;
+        document.getElementById('userBalance').textContent = displayBalance;
+        
+        // Show success message - clarify what was actually removed
+        const successMsg = `Removed ${selectedAdminCurrency.symbol}${amount.toFixed(2)} (≈ ${usdAmount.toFixed(2)} USD) from ${currentUser.username}'s account`;
+        alert(successMsg);
+        
+        closeModal('removeFundsModal');
+        document.getElementById('removeAmount').value = '';
+        selectedAdminCurrency = adminCurrencies[0]; // Reset to USD
+    }
+});
+
+document.getElementById('generatePinBtn').addEventListener('click', () => {
+    const pin = Math.floor(1000 + Math.random() * 9000).toString();
+    document.getElementById('generatedPin').textContent = pin;
+    openModal('generatePinModal');
+    if (currentUser) {
+        const userData = JSON.parse(localStorage.getItem(currentUser.key));
+        userData.activationPin = pin;
+        localStorage.setItem(currentUser.key, JSON.stringify(userData));
+    }
+});
+document.getElementById('copyPin').addEventListener('click', () => {
+    const pin = document.getElementById('generatedPin').textContent;
+    navigator.clipboard.writeText(pin).then(() => {
+        const copyBtn = document.getElementById('copyPin');
+        const originalText = copyBtn.textContent;
+        copyBtn.textContent = 'Copied!';
+        setTimeout(() => {
+            copyBtn.textContent = originalText;
+        }, 2000);
+    });
+});
+document.getElementById('sendPinBtn').addEventListener('click', () => {
+    if (currentUser) {
+        const userKey = currentUser.key;
+        const userData = JSON.parse(localStorage.getItem(userKey));
+        userData.activationPinSent = true;
+        localStorage.setItem(userKey, JSON.stringify(userData));
+        alert(`PIN sent to ${currentUser.username}.`);
+    }
+});
+document.getElementById('sendMessageBtn').addEventListener('click', () => openModal('sendMessageModal'));
+document.getElementById('confirmSendMessage').addEventListener('click', () => {
+    const title = document.getElementById('messageTitle').value.trim();
+    const content = document.getElementById('messageContent').value.trim();
+    if (title && content && currentUser) {
+        const userData = JSON.parse(localStorage.getItem(currentUser.key));
+        if (!userData.notifications) userData.notifications = [];
+        const newMessage = {
+            id: Date.now(),
+            title: title,
+            preview: content.substring(0, 50) + (content.length > 50 ? '...' : ''),
+            content: content
+        };
+        userData.notifications.unshift(newMessage);
+        localStorage.setItem(currentUser.key, JSON.stringify(userData));
+        closeModal('sendMessageModal');
+        document.getElementById('messageTitle').value = '';
+        document.getElementById('messageContent').value = '';
+        alert(`Message sent to ${currentUser.username}!`);
+    }
+});
+function handleWithdrawalRequest(requestId, status) {
+    requestId = Number(requestId);
+    let pending = JSON.parse(localStorage.getItem('pendingWithdrawals') || '[]');
+    const request = pending.find(r => r.id === requestId);
+    if (!request) return;
+
+    // --- FIX: ensure we always find the correct (renamed) user ---
+    const users = JSON.parse(localStorage.getItem("users") || "{}");
+    let userKey = request.username.toLowerCase();
+
+    // If this username was renamed, fall back to matching by account data
+    if (!localStorage.getItem(userKey)) {
+        // try to find a key in localStorage that has same username value
+        for (let i = 0; i < localStorage.length; i++) {
+            const k = localStorage.key(i);
+            if (["users", "currentUser", "pendingWithdrawals", "withdrawalApproval", "pinPaymentRequests", "pinBankDetails"].includes(k)) continue;
+            try {
+                const data = JSON.parse(localStorage.getItem(k));
+                if (data && data.username && data.username.toLowerCase() === request.username.toLowerCase()) {
+                    userKey = k; // use the renamed key
+                    break;
+                }
+            } catch (e) {}
+        }
+    }
+
+    let userData = JSON.parse(localStorage.getItem(userKey));
+    if (!userData) return;
+
+    // update the matching transaction
+    const transaction = userData.transactions.find(tx => tx.id === requestId);
+    if (transaction) {
+        transaction.status = status;
+        if (status === 'success') {
+            transaction.approvedAt = Date.now();
+        }
+    }
+
+    // refund balance if failed
+    if (status === 'failed') {
+        userData.balance += Math.abs(transaction.amount);
+    }
+
+    // save updated user data
+    localStorage.setItem(userKey, JSON.stringify(userData));
+
+    // record approval decision
+    const approvalData = {
+        userId: userKey, // use fixed key
+        status: status,
+        amount: request.amount,
+        timestamp: Date.now(),
+        processed: false
+    };
+    localStorage.setItem('withdrawalApproval', JSON.stringify(approvalData));
+
+    // remove from pending list
+    pending = pending.filter(r => r.id !== requestId);
+    localStorage.setItem('pendingWithdrawals', JSON.stringify(pending));
+
+    const stillPending = pending.some(r => r.username && currentUser && r.username.toLowerCase() === currentUser.key.toLowerCase());
+    document.getElementById('withdrawalActions').style.display = stillPending ? 'block' : 'none';
+
+    alert(`Withdrawal ${status === 'success' ? 'approved' : 'rejected'}! User will see the status on their dashboard.`);
+    loadUsers();
+}
+document.addEventListener('DOMContentLoaded', checkAuth);
+setInterval(() => {
+    if (adminPanel.style.display !== 'none') {
+        loadUsers();
+    }
+}, 30000);
+
+document.getElementById('approveBtn').addEventListener('click', () => {
+    showTransactionSelectModal('approve');
+});
+document.getElementById('rejectBtn').addEventListener('click', () => {
+    showTransactionSelectModal('reject');
+});
+
+function showTransactionSelectModal(actionType) {
+    const modal = document.getElementById('transactionSelectModal');
+    const title = document.getElementById('transactionModalTitle');
+    const list = document.getElementById('transactionList');
+    title.textContent = `Select Transaction to ${actionType === 'approve' ? 'Approve' : 'Reject'}`;
+    list.innerHTML = '';
+    const pending = JSON.parse(localStorage.getItem('pendingWithdrawals') || '[]')
+        .filter(r => r.username && currentUser && r.username.toLowerCase() === currentUser.key.toLowerCase())
+        .sort((a, b) => b.id - a.id);
+    if (pending.length === 0) {
+        list.innerHTML = '<p style="color:#666;">No pending withdrawals.</p>';
+    } else {
+        pending.forEach((request, idx) => {
+            const item = document.createElement('div');
+            item.className = "modal-item";
+            item.innerHTML = `
+                <div style="padding:8px; text-align:left;">
+                    <div><strong>ID:</strong> #${request.id}</div>
+                    <div><strong>Amount:</strong> ${request.currency.symbol}${request.amount}</div>
+                    <div><strong>Method:</strong> ${request.method}</div>
+                    <div><strong>Date:</strong> ${request.date}</div>
+                    <button class="btn btn-primary action-btn-modal" style="margin-top:8px; width:100%;">
+                        ${actionType === 'approve' ? 'Approve' : 'Reject'}
+                    </button>
+                </div>
+                ${idx !== pending.length - 1 ? '<hr>' : ''}
+            `;
+            item.querySelector('.action-btn-modal').addEventListener('click', function() {
+                modal.style.display = "none";
+                handleWithdrawalRequest(request.id, actionType === 'approve' ? 'success' : 'failed');
+            });
+            list.appendChild(item);
+        });
+    }
+    modal.style.display = 'block';
+}
+
+function renderPinPaymentRequests(user) {
+    const section = document.getElementById('pinPaymentRequestsSection');
+    section.innerHTML = '';
+    const requests = (JSON.parse(localStorage.getItem('pinPaymentRequests') || '[]'))
+        .filter(r => r.user && r.user.toLowerCase() === user.username.toLowerCase() && r.status !== 'confirmed');
+    if (requests.length === 0) {
+        section.innerHTML = '<div style="color:#666;">No PIN payment requests.</div>';
+        return;
+    }
+    requests.forEach((req, idx) => {
+        section.innerHTML += `
+            <div style="border:1px solid #eee; border-radius:8px; padding:10px; margin-bottom:10px;">
+                <div><strong>Status:</strong> ${req.status}</div>
+                <div><strong>Order ID:</strong> ${req.orderId}</div>
+                <div><strong>Date:</strong> ${new Date(req.date).toLocaleString()}</div>
+                <div>
+
+<div><strong>Plan:</strong> ${req.plan || 'Default'}</div>
+                    <strong>Slip:</strong>
+${req.slip ? (
+    req.slip.startsWith("data:application/pdf")
+        ? `<iframe src="${req.slip}" style="width:100%;height:300px;border:1px solid #ccc;"></iframe>`
+        : `<img src="${req.slip}" style="max-width:100%;border:1px solid #ccc;border-radius:6px;">`
+) : 'No slip'}
+                </div>
+                ${req.status === 'pending' ? 
+                    `<button class="btn btn-primary" onclick="openSendPinPaymentDetailsModal('${req.orderId}')">Send Payment Details</button>` : ''
+                }
+            </div>
+        `;
+    });
+}
+let currentPinPaymentOrderId = null;
+function openSendPinPaymentDetailsModal(orderId) {
+    currentPinPaymentOrderId = orderId;
+    document.getElementById('adminPinCode').value = '';
+    document.getElementById('adminPinMessage').value = '';
+    openModal('sendPinPaymentDetailsModal');
+}
+document.getElementById('confirmSendPinPaymentDetails').onclick = function() {
+    const pinCode = document.getElementById('adminPinCode').value.trim();
+    const message = document.getElementById('adminPinMessage').value.trim();
+    if (!pinCode) { alert("Please enter a PIN code."); return; }
+    let requests = JSON.parse(localStorage.getItem('pinPaymentRequests') || '[]');
+    let idx = requests.findIndex(r => r.orderId === currentPinPaymentOrderId);
+    if (idx > -1) {
+        requests[idx].status = 'confirmed';
+        requests[idx].pinCode = pinCode;
+        requests[idx].message = message;
+        localStorage.setItem('pinPaymentRequests', JSON.stringify(requests));
+        renderPinPaymentRequests(currentUser);
+        const userKey = requests[idx].user.toLowerCase();
+        const userData = JSON.parse(localStorage.getItem(userKey));
+        if (userData) {
+            if (!userData.notifications) userData.notifications = [];
+            userData.notifications.unshift({
+                id: Date.now(),
+                title: "PIN Payment Confirmed",
+                preview: "Your withdrawal PIN has been sent.",
+                content: `PIN Code: ${pinCode}\n${message}`
+            });
+            localStorage.setItem(userKey, JSON.stringify(userData));
+        }
+        closeModal('sendPinPaymentDetailsModal');
+        alert("PIN details sent to user.");
+    }
+};
+function renderBankDetails() {
+    const details = JSON.parse(localStorage.getItem('pinBankDetails') || '{}');
+    const display = document.getElementById('bankDetailsDisplay');
+    if (!details.bankName || !details.accountName || !details.accountNumber) {
+        display.innerHTML = '<span style="color:#888;">No bank details set.</span>';
+    } else {
+        display.innerHTML = `
+            <strong>Bank Name:</strong> ${details.bankName}<br>
+            <strong>Account Name:</strong> ${details.accountName}<br>
+            <strong>Account Number:</strong> ${details.accountNumber}
+        `;
+    }
+}
+document.getElementById('saveBankDetailsBtn').onclick = function() {
+    const bankName = document.getElementById('editBankName').value.trim();
+    const accountName = document.getElementById('editAccountName').value.trim();
+    const accountNumber = document.getElementById('editAccountNumber').value.trim();
+    if (!bankName || !accountName || !accountNumber) {
+        alert("Please fill all fields."); return;
+    }
+    localStorage.setItem('pinBankDetails', JSON.stringify({
+        bankName, accountName, accountNumber
+    }));
+    closeModal('editBankDetailsModal');
+    renderBankDetails();
+    alert("Bank details updated! Users will see them in purchase pin page.");
+};
+// Enhanced Admin Panel JavaScript with Currency Selection
+// Add this to your admin.html - replace the existing fund management code
+
+// Add these variables at the top of your admin script
+let adminExchangeRates = {};
+let selectedAdminCurrency = { code: 'USD', symbol: '$', rate: 1, name: 'US Dollar' };
+
+const adminCurrencies = [
+    // Fiat currencies
+    { code: 'USD', symbol: '$', rate: 1, flag: '🇺🇸', name: 'US Dollar' },
+    { code: 'EUR', symbol: '€', rate: 0.93, flag: '🇪🇺', name: 'Euro' },
+    { code: 'GBP', symbol: '£', rate: 0.81, flag: '🇬🇧', name: 'British Pound' },
+    { code: 'JPY', symbol: '¥', rate: 144.5, flag: '🇯🇵', name: 'Japanese Yen' },
+    { code: 'NGN', symbol: '₦', rate: 750, flag: '🇳🇬', name: 'Nigerian Naira' },
+    { code: 'CAD', symbol: 'C$', rate: 1.35, flag: '🇨🇦', name: 'Canadian Dollar' },
+    { code: 'AUD', symbol: 'A$', rate: 1.52, flag: '🇦🇺', name: 'Australian Dollar' },
+    { code: 'INR', symbol: '₹', rate: 83.12, flag: '🇮🇳', name: 'Indian Rupee' },
+    { code: 'CHF', symbol: 'CHF', rate: 0.92, flag: '🇨🇭', name: 'Swiss Franc' },
+    { code: 'CNY', symbol: '¥', rate: 6.91, flag: '🇨🇳', name: 'Chinese Yuan' },
+    { code: 'BRL', symbol: 'R$', rate: 5.12, flag: '🇧🇷', name: 'Brazilian Real' },
+    { code: 'ZAR', symbol: 'R', rate: 19.84, flag: '🇿🇦', name: 'South African Rand' },
+    { code: 'MXN', symbol: '$', rate: 17.05, flag: '🇲🇽', name: 'Mexican Peso' },
+    { code: 'SGD', symbol: 'S$', rate: 1.37, flag: '🇸🇬', name: 'Singapore Dollar' },
+    { code: 'KRW', symbol: '₩', rate: 1331, flag: '🇰🇷', name: 'South Korean Won' },
+    { code: 'RUB', symbol: '₽', rate: 93.25, flag: '🇷🇺', name: 'Russian Ruble' },
+    { code: 'TRY', symbol: '₺', rate: 33.2, flag: '🇹🇷', name: 'Turkish Lira' },
+    { code: 'SEK', symbol: 'kr', rate: 10.6, flag: '🇸🇪', name: 'Swedish Krona' },
+    { code: 'NOK', symbol: 'kr', rate: 10.8, flag: '🇳🇴', name: 'Norwegian Krone' },
+    { code: 'DKK', symbol: 'kr', rate: 7.03, flag: '🇩🇰', name: 'Danish Krone' },
+    { code: 'PLN', symbol: 'zł', rate: 4.33, flag: '🇵🇱', name: 'Polish Zloty' },
+    { code: 'AED', symbol: 'د.إ', rate: 3.67, flag: '🇦🇪', name: 'UAE Dirham' },
+    { code: 'SAR', symbol: '﷼', rate: 3.75, flag: '🇸🇦', name: 'Saudi Riyal' },
+    { code: 'HKD', symbol: 'HK$', rate: 7.85, flag: '🇭🇰', name: 'Hong Kong Dollar' },
+    { code: 'TWD', symbol: 'NT$', rate: 30.9, flag: '🇹🇼', name: 'Taiwan Dollar' },
+    { code: 'PHP', symbol: '₱', rate: 56.7, flag: '🇵🇭', name: 'Philippine Peso' },
+    { code: 'IDR', symbol: 'Rp', rate: 15000, flag: '🇮🇩', name: 'Indonesian Rupiah' },
+    { code: 'VND', symbol: '₫', rate: 23900, flag: '🇻🇳', name: 'Vietnamese Dong' },
+    { code: 'MYR', symbol: 'RM', rate: 4.52, flag: '🇲🇾', name: 'Malaysian Ringgit' },
+    { code: 'THB', symbol: '฿', rate: 34.1, flag: '🇹🇭', name: 'Thai Baht' },
+    { code: 'PKR', symbol: '₨', rate: 280, flag: '🇵🇰', name: 'Pakistani Rupee' },
+    { code: 'EGP', symbol: '£', rate: 30.9, flag: '🇪🇬', name: 'Egyptian Pound' },
+
+    // Cryptocurrencies
+    { code: 'BTC', symbol: '₿', rate: 0.000031, flag: '🪙', name: 'Bitcoin' },
+    { code: 'ETH', symbol: 'Ξ', rate: 0.00045, flag: '🪙', name: 'Ethereum' },
+    { code: 'USDT', symbol: '₮', rate: 1, flag: '🪙', name: 'Tether' },
+    { code: 'BNB', symbol: 'ⓑ', rate: 0.0081, flag: '🪙', name: 'Binance Coin' },
+    { code: 'ADA', symbol: '₳', rate: 0.12, flag: '🪙', name: 'Cardano' },
+    { code: 'SOL', symbol: '◎', rate: 0.18, flag: '🪙', name: 'Solana' },
+    { code: 'DOGE', symbol: 'Ð', rate: 15.2, flag: '🪙', name: 'Dogecoin' },
+    { code: 'DOT', symbol: '●', rate: 0.85, flag: '🪙', name: 'Polkadot' },
+    { code: 'XRP', symbol: '✕', rate: 1.15, flag: '🪙', name: 'Ripple' },
+    { code: 'LTC', symbol: 'Ł', rate: 0.005, flag: '🪙', name: 'Litecoin' }
+];
+
+// Fetch admin exchange rates
+async function fetchAdminExchangeRates() {
+    try {
+        const response = await fetch('https://v6.exchangerate-api.com/v6/7a0272e9aa0261ae6b9a862d/latest/USD');
+        const data = await response.json();
+        adminExchangeRates = data.conversion_rates;
+        
+        // Update currencies with real rates
+        adminCurrencies.forEach(currency => {
+            if (adminExchangeRates[currency.code]) {
+                currency.rate = adminExchangeRates[currency.code];
+            }
+        });
+        return true;
+    } catch (error) {
+        console.error('Admin: Failed to fetch exchange rates:', error);
+        return false;
+    }
+}
+
+// Enhanced Add Funds Modal with Currency Selection
+document.getElementById('addFundsBtn').addEventListener('click', async () => {
+    await fetchAdminExchangeRates();
+    openModal('addFundsModal');
+    renderAdminCurrencySelector('add');
+    updateAddFundsDisplay();
+});
+
+// Enhanced Remove Funds Modal with Currency Selection  
+document.getElementById('removeFundsBtn').addEventListener('click', async () => {
+    await fetchAdminExchangeRates();
+    openModal('removeFundsModal');
+    renderAdminCurrencySelector('remove');
+    updateRemoveFundsDisplay();
+});
+
+// Render currency selector for admin operations
+function renderAdminCurrencySelector(operation) {
+    const modalId = operation === 'add' ? 'addFundsModal' : 'removeFundsModal';
+    const modal = document.getElementById(modalId);
+    const existingSelector = modal.querySelector('.admin-currency-selector');
+    
+    if (existingSelector) {
+        existingSelector.remove();
+    }
+    
+    const currencySelector = document.createElement('div');
+    currencySelector.className = 'admin-currency-selector';
+    currencySelector.innerHTML = `
+        <div style="margin-bottom: 15px;">
+            <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #333;">Select Currency</label>
+            <div class="admin-currency-dropdown" style="position: relative;">
+                <button type="button" class="admin-currency-btn" style="
+                    width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px;
+                    background: white; display: flex; align-items: center; justify-content: space-between;
+                    cursor: pointer; font-size: 14px;
+                ">
+                    <span class="selected-currency-display">
+                        <span style="margin-right: 8px;">${selectedAdminCurrency.flag || '🇺🇸'}</span>
+                        ${selectedAdminCurrency.name} (${selectedAdminCurrency.symbol})
+                    </span>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6,9 12,15 18,9"></polyline>
+                    </svg>
+                </button>
+                <div class="admin-currency-options" style="
+                    position: absolute; top: 100%; left: 0; right: 0; z-index: 1000;
+                    background: white; border: 1px solid #ddd; border-radius: 6px;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.15); max-height: 200px;
+                    overflow-y: auto; display: none; margin-top: 2px;
+                ">
+                    ${adminCurrencies.map(currency => `
+                        <div class="currency-option" data-currency='${JSON.stringify(currency)}' style="
+                            padding: 10px; cursor: pointer; border-bottom: 1px solid #f0f0f0;
+                            display: flex; align-items: center; transition: background-color 0.2s;
+                        " onmouseover="this.style.backgroundColor='#f5f5f5'" onmouseout="this.style.backgroundColor='white'">
+                            <span style="margin-right: 10px; font-size: 16px;">${currency.flag}</span>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 500;">${currency.name}</div>
+                                <div style="font-size: 12px; color: #666;">1 USD = ${currency.rate.toFixed(4)} ${currency.code}</div>
+                            </div>
+                            <span style="font-size: 14px; color: #888;">${currency.symbol}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        </div>
+        <div class="conversion-info" style="
+            background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 6px;
+            padding: 10px; margin-bottom: 15px; font-size: 13px; color: #666;
+        ">
+            <div style="display: flex; justify-content: space-between;">
+                <span>Amount in USD:</span>
+                <span class="usd-equivalent">$0.00</span>
+            </div>
+            <div style="font-size: 11px; color: #888; margin-top: 4px;">
+                Rate: 1 USD = ${selectedAdminCurrency.rate.toFixed(4)} ${selectedAdminCurrency.code}
+            </div>
+        </div>
+    `;
+    
+    const formGroup = modal.querySelector('.form-group');
+    formGroup.parentNode.insertBefore(currencySelector, formGroup.nextSibling);
+    
+    // Add event listeners
+    setupAdminCurrencySelector(operation);
+}
+
+// Setup currency selector functionality
+function setupAdminCurrencySelector(operation) {
+    const modalId = operation === 'add' ? 'addFundsModal' : 'removeFundsModal';
+    const modal = document.getElementById(modalId);
+    const btn = modal.querySelector('.admin-currency-btn');
+    const options = modal.querySelector('.admin-currency-options');
+    const amountInput = document.getElementById(operation === 'add' ? 'addAmount' : 'removeAmount');
+    
+    // Toggle dropdown
+    btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        options.style.display = options.style.display === 'none' ? 'block' : 'none';
+    });
+    
+    // Select currency
+    modal.querySelectorAll('.currency-option').forEach(option => {
+        option.addEventListener('click', () => {
+            const currency = JSON.parse(option.dataset.currency);
+            selectedAdminCurrency = currency;
+            
+            // Update display
+            btn.querySelector('.selected-currency-display').innerHTML = `
+                <span style="margin-right: 8px;">${currency.flag}</span>
+                ${currency.name} (${currency.symbol})
+            `;
+            
+            // Update conversion info
+            const conversionInfo = modal.querySelector('.conversion-info');
+            conversionInfo.querySelector('.usd-equivalent').textContent = 
+                `$${(parseFloat(amountInput.value || 0) / currency.rate).toFixed(2)}`;
+            conversionInfo.querySelector('div:last-child').textContent = 
+                `Rate: 1 USD = ${currency.rate.toFixed(4)} ${currency.code}`;
+            
+            options.style.display = 'none';
+            
+            // Update amount input placeholder
+            amountInput.placeholder = `Amount in ${currency.code}`;
+        });
+    });
+    
+    // Update conversion on amount change
+    amountInput.addEventListener('input', () => {
+        const amount = parseFloat(amountInput.value || 0);
+        const usdAmount = amount / selectedAdminCurrency.rate;
+        modal.querySelector('.usd-equivalent').textContent = `$${usdAmount.toFixed(2)}`;
+    });
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!modal.contains(e.target)) {
+            options.style.display = 'none';
+        }
+    });
+}
+
+// Update add funds display
+function updateAddFundsDisplay() {
+    const input = document.getElementById('addAmount');
+    input.placeholder = `Amount in ${selectedAdminCurrency.code}`;
+    input.value = '';
+}
+
+// Update remove funds display  
+function updateRemoveFundsDisplay() {
+    const input = document.getElementById('removeAmount');
+    input.placeholder = `Amount in ${selectedAdminCurrency.code}`;
+    input.value = '';
+}
+
+// Enhanced Add Funds Confirmation
+document.getElementById('confirmAddFunds').addEventListener('click', () => {
+    const amount = parseFloat(document.getElementById('addAmount').value);
+    if (amount && amount > 0 && currentUser) {
+        // Convert to USD for storage
+        const usdAmount = amount / selectedAdminCurrency.rate;
+        
+        const userData = JSON.parse(localStorage.getItem(currentUser.key));
+        userData.balance = (userData.balance || 0) + usdAmount;
+        localStorage.setItem(currentUser.key, JSON.stringify(userData));
+        
+        currentUser.balance = userData.balance;
+        const displayBalance = `${currentUser.currency.symbol}${(currentUser.balance * currentUser.currency.rate).toFixed(2)}`;
+        document.getElementById('userBalance').textContent = displayBalance;
+        
+        // Show success message with currency info
+        const successMsg = `Added ${selectedAdminCurrency.symbol}${amount.toFixed(2)} (≈ $${usdAmount.toFixed(2)} USD) to ${currentUser.username}'s account`;
+        alert(successMsg);
+        
+        closeModal('addFundsModal');
+        document.getElementById('addAmount').value = '';
+        selectedAdminCurrency = adminCurrencies[0]; // Reset to USD
+    }
+});
+
+// Enhanced Remove Funds Confirmation
+document.getElementById('confirmRemoveFunds').addEventListener('click', () => {
+    const amount = parseFloat(document.getElementById('removeAmount').value);
+    if (amount && amount > 0 && currentUser) {
+        // Convert to USD for storage
+        const usdAmount = amount / selectedAdminCurrency.rate;
+        
+        const userData = JSON.parse(localStorage.getItem(currentUser.key));
+        const newBalance = Math.max(0, (userData.balance || 0) - usdAmount);
+        userData.balance = newBalance;
+        localStorage.setItem(currentUser.key, JSON.stringify(userData));
+        
+        currentUser.balance = userData.balance;
+        const displayBalance = `${currentUser.currency.symbol}${(currentUser.balance * currentUser.currency.rate).toFixed(2)}`;
+        document.getElementById('userBalance').textContent = displayBalance;
+        
+        // Show success message with currency info
+        const successMsg = `Removed ${selectedAdminCurrency.symbol}${amount.toFixed(2)} (≈ $${usdAmount.toFixed(2)} USD) from ${currentUser.username}'s account`;
+        alert(successMsg);
+        
+        closeModal('removeFundsModal');
+        document.getElementById('removeAmount').value = '';
+        selectedAdminCurrency = adminCurrencies[0]; // Reset to USD
+    }
+});
+
+// Initialize admin rates on load
+document.addEventListener('DOMContentLoaded', async function() {
+    checkAuth();
+    await fetchAdminExchangeRates();
+});
+function renderWalletAddresses() {
+    const wallets = JSON.parse(localStorage.getItem('pinWalletAddresses') || '{}');
+    const display = document.getElementById('walletAddressesDisplay');
+    
+    const availableWallets = Object.entries(wallets).filter(([key, address]) => address && address.trim());
+    
+    if (availableWallets.length === 0) {
+        display.innerHTML = '<div style="background: #f8f9fa; padding: 10px; border-radius: 6px;"><strong>Crypto Wallets:</strong> <span style="color:#888;">Not configured</span></div>';
+        return;
+    }
+
+    const walletLabels = {
+        btc: 'Bitcoin (BTC)',
+        eth: 'Ethereum (ETH)', 
+        usdtTrc20: 'USDT (TRC20)',
+        usdtErc20: 'USDT (ERC20)',
+        bnb: 'Binance Coin (BNB)',
+        ltc: 'Litecoin (LTC)',
+        doge: 'Dogecoin (DOGE)',
+        usdc: 'USDC (ERC20)'
+    };
+
+    let walletsHtml = '<div style="background: #f8f9fa; padding: 10px; border-radius: 6px;"><strong>Crypto Wallets:</strong><br>';
+    
+    availableWallets.forEach(([key, address]) => {
+        const label = walletLabels[key] || key.toUpperCase();
+        const shortAddress = `${address.substring(0, 8)}...${address.substring(address.length - 8)}`;
+        walletsHtml += `<div style="margin: 4px 0;"><strong>${label}:</strong> ${shortAddress}</div>`;
+    });
+    
+    walletsHtml += '</div>';
+    display.innerHTML = walletsHtml;
+}
+
+// Save wallet addresses
+document.getElementById('saveWalletAddressesBtn').onclick = function() {
+    const walletAddresses = {
+        btc: document.getElementById('editBtcAddress').value.trim(),
+        eth: document.getElementById('editEthAddress').value.trim(),
+        usdtTrc20: document.getElementById('editUsdtTrc20Address').value.trim(),
+        usdtErc20: document.getElementById('editUsdtErc20Address').value.trim(),
+        bnb: document.getElementById('editBnbAddress').value.trim(),
+        ltc: document.getElementById('editLtcAddress').value.trim(),
+        doge: document.getElementById('editDogeAddress').value.trim(),
+        usdc: document.getElementById('editUsdcAddress').value.trim()
+    };
+    
+    localStorage.setItem('pinWalletAddresses', JSON.stringify(walletAddresses));
+    closeModal('editWalletAddressesModal');
+    renderWalletAddresses();
+    alert("Wallet addresses updated! Users will see them in purchase PIN page.");
+};
+function rejectPinPrompt() {
+    const orderId = prompt("Enter the Order ID of the PIN request you want to reject:");
+    if (!orderId) return;
+
+    const requests = JSON.parse(localStorage.getItem('pinPaymentRequests') || '[]');
+    const index = requests.findIndex(r => r.orderId === orderId);
+
+    if (index !== -1) {
+        // remove the request from the array
+        requests.splice(index, 1);
+        localStorage.setItem('pinPaymentRequests', JSON.stringify(requests));
+        alert(`PIN request ${orderId} has been rejected and removed.`);
+        location.reload();
+    } else {
+        alert("Request not found.");
+    }
+}
+</script>
+</body>
+</html>
