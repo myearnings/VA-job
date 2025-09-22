@@ -1,0 +1,2718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dashboard</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background-color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            touch-action: manipulation;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+        }
+        .greeting {
+            font-size: 18px;
+            color: #333;
+            margin-right: auto;
+            font-weight: 500;
+            letter-spacing: 0.2px;
+        }
+        .btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            background-color: black;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            position: relative;
+        }
+        .btn:hover {
+            background-color: #333;
+            transform: translateY(-1px);
+        }
+        .btn svg {
+            width: 24px;
+            height: 24px;
+            stroke-width: 2.5;
+            fill: none;
+            stroke: currentColor;
+            transform: scale(1.3);
+        }
+        .red-dot {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 10px;
+            height: 10px;
+            background-color: red;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+        .modal-content {
+            position: absolute;
+            top: 70px;
+            right: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            width: 250px;
+            padding: 15px 0;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 15px 10px 15px;
+            border-bottom: 1px solid #eee;
+        }
+        .modal-title {
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #777;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+        .close-btn:hover {
+            background-color: #f0f0f0;
+        }
+        .modal-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .modal-item:hover {
+            background-color: #f5f5f5;
+        }
+        .modal-item svg {
+            margin-right: 12px;
+        }
+        .modal-divider {
+            height: 1px;
+            background-color: #eee;
+            margin: 8px 0;
+        }
+        .edit-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+        .edit-modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            width: 300px;
+            padding: 15px;
+        }
+        .edit-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .form-group {
+            margin-bottom: 12px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+            font-size: 14px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 14px;
+            touch-action: manipulation;
+        }
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 15px;
+        }
+        .form-actions button {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            touch-action: manipulation;
+        }
+        .cancel-btn {
+            background-color: #f0f0f0;
+            color: #555;
+        }
+        .save-btn {
+            background-color: #007bff;
+            color: white;
+        }
+        .notification-modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            width: 300px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .notification-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        .notification-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .notification-item {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .notification-item:hover {
+            background-color: #f9f9f9;
+        }
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+        .notification-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .notification-preview {
+            font-size: 14px;
+            color: #666;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .no-notifications {
+            padding: 15px;
+            text-align: center;
+            color: #666;
+        }
+        .message-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+        .message-modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            width: 300px;
+            padding: 15px;
+        }
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .message-title {
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .message-content {
+            margin-bottom: 20px;
+            line-height: 1.5;
+            font-size: 14px;
+        }
+        .message-actions {
+            display: flex;
+            justify-content: flex-end;
+        }
+        .back-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .delete-btn {
+            background-color: #ff4d4d;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-left: 10px;
+        }
+        .delete-btn:hover {
+            background-color: #ff1a1a;
+        }
+        .balance-card-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 0.2px;
+        }
+        .balance-card {
+            background-color: #000;
+            color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            padding: 20px;
+            text-align: center;
+            width: 320px;
+            max-width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .balance-label {
+            font-size: 18px;
+            color: #ccc;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .balance-label svg {
+            width: 22px;
+            height: 22px;
+            fill: none;
+            stroke: currentColor;
+        }
+        .balance-amount {
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+        }
+        .balance-dots {
+            font-size: 24px;
+            color: white;
+            display: none;
+        }
+        .action-card-container {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 20px;
+            padding: 0 20px;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+        }
+        .action-card {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            padding: 14px;
+            width: 90px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            border: 1px solid #f0f0f0;
+            height: 65px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .action-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .action-card svg {
+            width: 20px;
+            height: 20px;
+            fill: none;
+            stroke: #000;
+            stroke-width: 2;
+            margin-bottom: 4px;
+            transform: translateY(-2px);
+        }
+        .action-card span {
+            font-size: 10px;
+            color: #333;
+            font-weight: 500;
+            line-height: 1.4;
+        }
+        .transactions-container {
+            margin-top: 20px;
+            padding: 0 20px;
+        }
+        .transactions-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .transactions-header h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+        .see-all {
+            font-size: 14px;
+            color: #666;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .transactions-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            padding: 8px 0;
+        }
+        .transaction-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            transition: transform 0.2s ease;
+        }
+        .transaction-item:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .transaction-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+        }
+        .transaction-icon svg {
+            width: 20px;
+            height: 20px;
+            fill: #333;
+        }
+        .transaction-details {
+            flex: 1;
+        }
+        .transaction-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            margin: 0;
+        }
+        .transaction-date {
+            font-size: 12px;
+            color: #666;
+            margin: 0;
+        }
+        .transaction-amount {
+            font-size: 14px;
+            font-weight: 500;
+            margin: 0;
+        }
+        .withdraw-modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            width: 90%;
+            max-width: 250px;
+            padding: 24px;
+            text-align: center;
+        }
+        .modal-header h2 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+        .modal-body {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            align-items: center;
+        }
+        #withdrawAmount {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        .proceed-btn {
+            background-color: #000;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+        .proceed-btn:hover {
+            background-color: #333;
+        }
+        .confirm-btn {
+            background-color: #000;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+            transition: background-color 0.3s;
+        }
+        .confirm-btn:hover {
+            background-color: #333;
+        }
+        .pin-actions {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .purchase-btn {
+            background-color: #000;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 14px;
+            cursor: pointer;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: background-color 0.3s;
+        }
+        .purchase-btn:hover {
+            background-color: #333;
+        }
+        .confirm-btn {
+            background-color: #000;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 14px;
+            cursor: pointer;
+            flex: 1;
+            transition: background-color 0.3s;
+        }
+        .confirm-btn:hover {
+            background-color: #333;
+        }
+        .purchase-btn svg {
+            width: 18px;
+            height: 18px;
+            stroke: currentColor;
+            stroke-width: 2;
+            fill: none;
+        }
+        #purchasePinModal p {
+            font-size: 14px;
+            color: #555;
+        }
+        #purchasePinModal .pin-actions button {
+            font-size: 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #purchasePinModal .confirm-btn:hover {
+            background-color: #333;
+        }
+        #purchasePinModal .purchase-btn:hover {
+            background-color: #444;
+        }
+        #withdrawalPendingModal .modal-content,
+        #withdrawalSuccessModal .modal-content,
+        #withdrawalFailedModal .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            margin: 0;
+            border-radius: 12px;
+            width: 300px;
+            max-width: 90%;
+            text-align: center;
+        }
+        #withdrawalPendingModal .close,
+        #withdrawalSuccessModal .close,
+        #withdrawalFailedModal .close {
+            position: absolute;
+            top: 10px;
+            right: 12px;
+            font-size: 20px;
+            color: #888;
+            cursor: pointer;
+        }
+        #withdrawalPendingModal .close:hover,
+        #withdrawalSuccessModal .close:hover,
+        #withdrawalFailedModal .close:hover {
+            color: #000;
+        }
+        .loading-dots span {
+            animation: blink 1.4s infinite both;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes blink {
+            0% { opacity: 0.2; }
+            20% { opacity: 1; }
+            100% { opacity: 0.2; }
+        }
+        .modal.dimmed {
+            opacity: 0.4;
+            pointer-events: none;
+        }
+        #buyHereModal .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            margin: 0;
+            border-radius: 10px;
+            width: 240px;
+            max-width: 85%;
+            text-align: center;
+            padding: 16px 14px;
+            background: #fff;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        #buyHereModal .modal-content svg {
+            width: 30px;
+            height: 30px;
+            margin-bottom: 6px;
+        }
+        #buyHereModal .modal-content p {
+            font-size: 13px;
+            color: #ff9800;
+            font-weight: 600;
+            margin: 0;
+        }
+        #learnMoreModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        #learnMoreModal .modal-content {
+            position: relative;
+            top: auto;
+            left: auto;
+            right: auto;
+            transform: none;
+            background: #fff;
+            border-radius: 12px;
+            width: 280px;
+            max-width: 90%;
+            text-align: center;
+            padding: 18px 16px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+        }
+        .transaction-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+.persistent-modal {
+    pointer-events: auto !important;
+    opacity: 1 !important;
+}
+
+.persistent-modal .modal-content {
+    animation: persistentPulse 2s ease-in-out infinite;
+}
+
+@keyframes persistentPulse {
+    0% { box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+    50% { box-shadow: 0 6px 20px rgba(76, 175, 80, 0.3); }
+    100% { box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+}
+#pinModal {
+    z-index: 1000;
+}
+
+#purchasePinModal {
+    z-index: 1001;
+}
+
+/* When PIN modal is behind purchase modal */
+#pinModal.behind {
+    z-index: 999;
+}
+.persistent-modal {
+    pointer-events: auto !important;
+    opacity: 1 !important;
+}
+
+.persistent-modal .modal-content {
+    animation: persistentPulse 2s ease-in-out infinite;
+}
+
+@keyframes persistentPulse {
+    0% { box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+    50% { box-shadow: 0 6px 20px rgba(76, 175, 80, 0.3); }
+    100% { box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+}
+
+.persistent-failed-modal .modal-content {
+    animation: persistentFailedPulse 2s ease-in-out infinite;
+}
+
+@keyframes persistentFailedPulse {
+    0% { box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+    50% { box-shadow: 0 6px 20px rgba(231, 76, 60, 0.3); }
+    100% { box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+}
+#activationPinModal .modal-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0;
+    border-radius: 12px;
+    width: 300px;
+    max-width: 90%;
+    text-align: center;
+}
+#activationPinModal .close {
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    font-size: 22px;
+    color: #888;
+    cursor: pointer;
+    z-index: 10;
+    background: none;
+    border: none;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background 0.2s;
+}
+#activationPinModal .close:hover {
+    background: #f0f0f0;
+    color: #000;
+}
+#activationPinModal .modal-content {
+    position: relative; /* Important for absolutely positioning children! */
+}
+#allTransactionsModal .modal-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 400px;
+    width: 96%;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+}
+/* Add this CSS to your dashboard.html <style> section */
+
+/* Username Success Modal */
+#usernameSuccessModal .modal-content,
+#usernameCooldownModal .modal-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0;
+    border-radius: 12px;
+    width: 300px;
+    max-width: 90%;
+    text-align: center;
+    padding: 20px;
+    background: white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+#usernameSuccessModal .close,
+#usernameCooldownModal .close {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    font-size: 20px;
+    color: #888;
+    cursor: pointer;
+    background: none;
+    border: none;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s;
+}
+
+#usernameSuccessModal .close:hover,
+#usernameCooldownModal .close:hover {
+    background: #f0f0f0;
+    color: #000;
+}
+
+.username-modal-title {
+    font-weight: 600;
+    margin: 10px 0;
+    font-size: 16px;
+}
+
+.username-modal-subtitle {
+    color: #666;
+    font-size: 14px;
+    margin: 10px 0 0 0;
+    line-height: 1.4;
+}
+
+.username-success-title {
+    color: #4caf50;
+}
+
+.username-cooldown-title {
+    color: #ffc107;
+}
+/* Add this CSS to your dashboard.html <style> section - Email Change Modals */
+
+/* Email Success Modal */
+#emailSuccessModal .modal-content,
+#emailCooldownModal .modal-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0;
+    border-radius: 12px;
+    width: 300px;
+    max-width: 90%;
+    text-align: center;
+    padding: 20px;
+    background: white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+#emailSuccessModal .close,
+#emailCooldownModal .close {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    font-size: 20px;
+    color: #888;
+    cursor: pointer;
+    background: none;
+    border: none;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s;
+}
+
+#emailSuccessModal .close:hover,
+#emailCooldownModal .close:hover {
+    background: #f0f0f0;
+    color: #000;
+}
+
+.email-modal-title {
+    font-weight: 600;
+    margin: 10px 0;
+    font-size: 16px;
+}
+
+.email-modal-subtitle {
+    color: #666;
+    font-size: 14px;
+    margin: 10px 0 0 0;
+    line-height: 1.4;
+}
+
+.email-success-title {
+    color: #4caf50;
+}
+
+.email-cooldown-title {
+    color: #ffc107;
+}
+/* Add this CSS to your dashboard.html <style> section - Password Change Modals */
+
+/* Password Success Modal */
+#passwordSuccessModal .modal-content,
+#passwordCooldownModal .modal-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0;
+    border-radius: 12px;
+    width: 300px;
+    max-width: 90%;
+    text-align: center;
+    padding: 20px;
+    background: white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+#passwordSuccessModal .close,
+#passwordCooldownModal .close {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    font-size: 20px;
+    color: #888;
+    cursor: pointer;
+    background: none;
+    border: none;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s;
+}
+
+#passwordSuccessModal .close:hover,
+#passwordCooldownModal .close:hover {
+    background: #f0f0f0;
+    color: #000;
+}
+
+.password-modal-title {
+    font-weight: 600;
+    margin: 10px 0;
+    font-size: 16px;
+}
+
+.password-modal-subtitle {
+    color: #666;
+    font-size: 14px;
+    margin: 10px 0 0 0;
+    line-height: 1.4;
+}
+
+.password-success-title {
+    color: #4caf50;
+}
+
+.password-cooldown-title {
+    color: #ffc107;
+}
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="greeting" id="greeting">Hello username!</div>
+        <button class="btn profile-btn" id="profileBtn">U</button>
+        <button class="btn notification-btn" id="notificationBtn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+            <div class="red-dot" id="redDot"></div>
+        </button>
+    </div>
+    <div class="balance-card-container">
+        <div class="balance-card">
+            <div class="balance-label">
+                Current Balance
+                <svg id="toggleBalance" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#fff" stroke-width="1.8" style="cursor:pointer; width:22px; height:22px;">
+                    <path class="eye-open" stroke-linecap="round" stroke-linejoin="round" d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/>
+                    <circle class="eye-open" cx="12" cy="12" r="3"/>
+                    <path class="eye-slash" stroke-linecap="round" stroke-linejoin="round" d="M17.94 17.94A10.94 10.94 0 0112 19c-7 0-11-7-11-7a21.77 21.77 0 015.06-5.94m3.5-2.06A10.94 10.94 0 0112 5c7 0 11 7 11 7a21.77 21.77 0 01-2.06 3.12M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    <line class="eye-slash" x1="3" y1="3" x2="21" y2="21"/>
+                </svg>
+            </div>
+            <div class="balance-amount" id="balanceAmount">$100.00</div>
+            <div class="balance-dots" id="balanceDots">••••••</div>
+        </div>
+    </div>
+    <div class="action-card-container">
+        <div class="action-card" id="withdrawBtn">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5l0 14M5 12l7-7 7 7" /></svg>
+            <span>Withdraw</span>
+        </div>
+        <div class="action-card" id="changeCurrencyBtn">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M3 5v6c0 1.7 4 3 9 3s9-1.3 9-3V5"></path><path d="M3 11v6c0 1.7 4 3 9 3s9-1.3 9-3v-6"></path></svg>
+            <span>Change<br>Currency</span>
+        </div>
+        <div class="action-card" id="addPaymentMethodBtn">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" /><line x1="1" y1="10" x2="23" y2="10" /><line x1="1" y1="14" x2="23" y2="14" /></svg>
+            <span>Add<br>Payment<br>Method</span>
+        </div>
+        <div class="action-card" id="purchasePinBtn">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" /><path d="M1 1h4l2.5 14h8L18 1H23v2h-2.5L16 17h-8l-2.5-14H1V1z" /></svg>
+            <span>Purchase<br>Pin</span>
+        </div>
+    </div>
+    <div class="transactions-container">
+        <div class="transactions-header">
+            <h3>Recent Transactions</h3>
+            <span class="see-all">See all</span>
+        </div>
+        <div class="transactions-list"></div>
+    </div>
+    <div class="modal" id="profileModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Profile</div>
+                <button class="close-btn" id="closeProfileModalBtn">&times;</button>
+            </div>
+            <div class="modal-item" id="editProfileBtn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                <span>Edit Profile</span>
+            </div>
+            <div class="modal-divider"></div>
+            <div class="modal-item" id="logoutBtn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                <span>Logout</span>
+            </div>
+        </div>
+    </div>
+    <div class="edit-modal-overlay" id="editProfileModal">
+        <div class="edit-modal-content">
+            <div class="edit-modal-header">
+                <div class="modal-title">Edit Profile</div>
+                <button class="close-btn" id="closeEditModalBtn">&times;</button>
+            </div>
+            <div class="form-group"><label for="username">Username</label><input type="text" id="username" value="username"></div>
+            <div class="form-group"><label for="email">Email</label><input type="email" id="email" value="user@example.com"></div>
+            <div class="form-group"><label for="password">New Password</label><input type="password" id="password" placeholder="Enter new password"></div>
+            <div class="form-actions"><button class="cancel-btn" id="cancelEditBtn">Cancel</button><button class="save-btn" id="saveProfileBtn">Save</button></div>
+        </div>
+    </div>
+    <div class="modal" id="notificationModal">
+        <div class="notification-modal-content">
+            <div class="notification-header"><div class="modal-title">Notifications</div><button class="close-btn" id="closeNotificationModalBtn">&times;</button></div>
+            <ul class="notification-list" id="notificationList"></ul>
+        </div>
+    </div>
+    <div class="message-modal-overlay" id="messageModal">
+        <div class="message-modal-content">
+            <div class="message-header"><div class="message-title" id="messageTitle">Message Title</div><button class="close-btn" id="closeMessageModalBtn">&times;</button></div>
+            <div class="message-content" id="messageContent">Message content will appear here...</div>
+            <div class="message-actions"><button class="back-btn" id="backToNotificationsBtn">Back</button><button class="delete-btn" id="deleteMessageBtn">Delete</button></div>
+        </div>
+    </div>
+    <div class="modal" id="withdrawModal">
+        <div class="modal-content withdraw-modal-content">
+            <div class="modal-header"><h2>Withdraw Funds</h2><button class="close-btn" id="closeWithdrawModal">&times;</button></div>
+            <div class="modal-body">
+                <input type="number" id="withdrawAmount" placeholder="Enter amount" min="0" step="0.01" />
+                <span id="withdrawWarning" style="color: red; font-size: 13px; display: none;">Minimum withdrawal amount is $10.</span>
+                <div class="payment-method-display"><p id="currentPaymentMethod">No payment method set.</p></div>
+                <div class="modal-item" id="editPaymentMethodBtn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7h-9M14 17H5m13-5H5" /></svg>
+                    <span>Edit Payment Method</span>
+                </div>
+                <div class="modal-divider"></div>
+                <button class="proceed-btn" id="proceedToWithdraw">Proceed to Withdraw</button>
+            </div>
+        </div>
+    </div>
+    <div class="edit-modal-overlay" id="editPaymentMethodModal">
+        <div class="edit-modal-content">
+            <div class="edit-modal-header"><div class="modal-title">Edit Payment Method</div><button class="close-btn" id="closeEditPaymentMethod">&times;</button></div>
+            <div class="form-group">
+                <label for="paymentType">Payment Type</label>
+                <input type="text" id="paymentType" placeholder="e.g., Bank, PayPal, Card">
+                <ul id="paymentSuggestions" style="list-style:none; margin:4px 0 0; padding:0; border:1px solid #ddd; border-radius:4px; max-height:120px; overflow-y:auto; display:none; background:#fff;"></ul>
+            </div>
+            <div class="form-group"><label for="paymentDetails">Payment Details</label><input type="text" id="paymentDetails" placeholder="Enter account/email/card"></div>
+            <div class="form-actions">
+                <p id="paymentError" style="color:red; font-size:13px; display:none; margin-top:6px;">Please fill out both fields.</p>
+                <button class="cancel-btn" id="cancelEditPaymentMethod">Cancel</button><button class="save-btn" id="savePaymentMethod">Save</button>
+            </div>
+        </div>
+    </div>
+    <div class="modal" id="purchasePinModal">
+        <div class="edit-modal-content" style="max-width: 320px; width: 90%;">
+            <div class="modal-header"><div class="modal-title">Purchase Activation PIN</div><button class="close-btn" id="closePurchasePinModal">&times;</button></div>
+            <p style="text-align:center; margin: 20px 10px; font-size: 14px; color: #555;">Contact your project manager to buy pin.</p>
+            <div class="pin-actions" style="display: flex; gap: 12px; margin-top: 15px;">
+                <button class="confirm-btn" id="buyHereBtn" style="flex: 1; padding: 10px; display: flex; align-items: center; justify-content: center; gap: 6px;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 6h15l-1.68 8.39a2 2 0 0 1-1.99 1.61H8.67a2 2 0 0 1-1.98-1.62L4 2H2"></path><circle cx="10" cy="20" r="2"></circle><circle cx="18" cy="20" r="2"></circle></svg>Buy Here</button>
+                <button class="purchase-btn" id="learnMoreBtn" style="flex: 1; padding: 10px; display: flex; align-items: center; justify-content: center; gap: 6px;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="8"></line></svg>Learn More</button>
+            </div>
+        </div>
+    </div>
+    <div id="pinModal" class="modal">
+        <div class="edit-modal-content">
+            <span class="close-btn" id="closePinModal">&times;</span>
+            <h2>Enter Activation PIN</h2>
+            <input type="password" id="pinInput" placeholder="Enter PIN" class="input-field" minlength="4" maxlength="8" />
+            <p id="pinError" style="color:red; font-size:13px; display:none; margin-top:6px;">Incorrect PIN ❌</p>
+            <div class="pin-actions">
+                <button class="confirm-btn" id="confirmWithdrawBtn">Confirm Withdrawal</button>
+                <button class="purchase-btn" id="purchasePinModalBtn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" /><path d="M1 1h4l2.5 14h8L18 1H23v2h-2.5L16 17h-8l-2.5-14H1V1z" /></svg>Purchase PIN</button>
+            </div>
+        </div>
+    </div>
+    <div id="withdrawalPendingModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closePendingModal">&times;</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ff9800" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:10px;"><path d="M6 2h12"></path><path d="M6 22h12"></path><path d="M6 2v6a6 6 0 0 0 12 0V2"></path><path d="M6 22v-6a6 6 0 0 1 12 0v6"></path></svg>
+            <p style="color:#ff9800; font-weight:600;">Withdrawal Pending<span class="loading-dots"><span>.</span><span>.</span><span>.</span></span></p>
+        </div>
+    </div>
+    <div id="withdrawalSuccessModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeSuccessModal">&times;</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#4caf50" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:10px;"><path d="M9 12l2 2 4-4"></path><circle cx="12" cy="12" r="10"></circle></svg>
+            <p style="color:#4caf50; font-weight:600;">Withdrawal Successful</p>
+        </div>
+    </div>
+    <div id="learnMoreModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header" style="justify-content: center; margin-bottom: 10px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" stroke="#007bff" stroke-width="2" viewBox="0 0 24 24" style="margin-right: 6px;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="8"></line></svg>
+                <h3 style="font-size: 16px; font-weight: 600; color: #333; margin: 0;">Learn More</h3>
+            </div>
+            <p style="font-size: 13px; color: #555; line-height: 1.5; margin-bottom: 15px;">Activation PINs are required to withdraw your earnings securely. You can purchase them directly or contact support for assistance. This ensures safe and verified transactions on your account.</p>
+            <button id="closeLearnMoreModal" class="confirm-btn" style="padding: 8px 14px; font-size: 14px; border-radius: 8px;">Close</button>
+        </div>
+    </div>
+    <div id="buyHereModal" class="modal">
+        <div class="modal-content">
+            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ff9800" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:10px;"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.5 14h8L18 1H23v2h-2.5L16 17h-8l-2.5-14H1V1z"></path></svg>
+            <p style="color:#ff9800; font-weight:600;">Redirecting to purchase page<span class="buyhere-loading-dots"><span>.</span><span>.</span><span>.</span></span></p>
+        </div>
+    </div>
+    <div class="modal" id="currencyModal">
+        <div class="modal-content">
+            <div class="modal-header"><div class="modal-title">Select Currency</div><button class="close-btn" id="closeCurrencyModal">&times;</button></div>
+            <input type="text" id="currencySearch" placeholder="Search currency..." style="width:90%; margin:10px auto; display:block; padding:6px; border:1px solid #ddd; border-radius:6px;">
+            <ul id="currencyList" style="list-style:none; padding:0; margin:0; max-height:250px; overflow-y:auto;"></ul>
+        </div>
+    </div>
+    
+    <div id="withdrawalFailedModal" class="modal">
+        <div class="modal-content">
+            <span id="closeFailedModal" class="close">&times;</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#e74c3c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="failed-icon"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><circle cx="12" cy="16" r="1"></circle></svg>
+            <h2>Withdrawal Failed</h2>
+            <p>Your withdrawal request failed. Please try again. If the problem persists, contact your project manager.</p>
+        </div>
+    </div>
+<div id="activationPinModal" class="modal">
+    <div class="modal-content">
+        <span class="close" id="closeActivationPinModal">&times;</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#007bff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:10px;">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M9 12l2 2 4-4"></path>
+        </svg>
+        <h2>Your Activation PIN</h2>
+        <p id="activationPinMessage" style="margin-top:10px; font-size:16px; color:#333;">
+            <!-- The message will be set dynamically -->
+        </p>
+    </div>
+</div>
+<!-- All Transactions Modal -->
+<div id="allTransactionsModal" class="modal">
+    <div class="modal-content" style="max-width:400px; width:96%; border-radius:12px;">
+        <div class="modal-header" style="padding-bottom:10px; border-bottom:1px solid #eee;">
+            <div class="modal-title">All Transactions</div>
+            <button class="close-btn" id="closeAllTransactionsBtn">&times;</button>
+        </div>
+        <div id="allTransactionsList" style="padding:12px 0; max-height:400px; overflow-y:auto;">
+            <!-- Filled by JS -->
+        </div>
+    </div>
+</div>
+
+<!-- Transaction Receipt Modal -->
+<div id="paymentDetailsModal" class="modal">
+    <div class="modal-content" style="max-width:350px; width:90%; border-radius:12px;">
+        <div class="modal-header" style="padding-bottom:10px; border-bottom:1px solid #eee;">
+            <div class="modal-title">Transaction Receipt</div>
+            <button class="close-btn" id="closePaymentDetailsBtn">&times;</button>
+        </div>
+        <div id="paymentDetailsBody" style="padding:16px 14px;">
+            <!-- Filled by JS -->
+        </div>
+    </div>
+</div>
+<div id="usernameSuccessModal" class="modal">
+    <div class="modal-content">
+        <span class="close" id="closeUsernameSuccessModal">&times;</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#4caf50" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:10px;">
+            <path d="M9 12l2 2 4-4"></path>
+            <circle cx="12" cy="12" r="10"></circle>
+        </svg>
+        <p class="username-modal-title username-success-title">Username Changed Successfully!</p>
+        <p class="username-modal-subtitle">You can change it again in 7 days.</p>
+    </div>
+</div>
+
+<!-- Username Change Cooldown Modal -->
+<div id="usernameCooldownModal" class="modal">
+    <div class="modal-content">
+        <span class="close" id="closeUsernameCooldownModal">&times;</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ffc107" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:10px;">
+            <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"></path>
+            <line x1="12" y1="9" x2="12" y2="13"></line>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+        <p class="username-modal-title username-cooldown-title">Username Change Restricted</p>
+        <p id="cooldownMessage" class="username-modal-subtitle"></p>
+    </div>
+</div>
+<!-- Add these email change modals to your dashboard.html body -->
+
+<!-- Email Change Success Modal -->
+<div id="emailSuccessModal" class="modal">
+    <div class="modal-content">
+        <span class="close" id="closeEmailSuccessModal">&times;</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#4caf50" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:10px;">
+            <path d="M9 12l2 2 4-4"></path>
+            <circle cx="12" cy="12" r="10"></circle>
+        </svg>
+        <p class="email-modal-title email-success-title">Email Changed Successfully!</p>
+        <p class="email-modal-subtitle">You can change it again in 7 days.</p>
+    </div>
+</div>
+
+<!-- Email Change Cooldown Modal -->
+<div id="emailCooldownModal" class="modal">
+    <div class="modal-content">
+        <span class="close" id="closeEmailCooldownModal">&times;</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ffc107" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:10px;">
+            <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"></path>
+            <line x1="12" y1="9" x2="12" y2="13"></line>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+        <p class="email-modal-title email-cooldown-title">Email Change Restricted</p>
+        <p id="emailCooldownMessage" class="email-modal-subtitle"></p>
+    </div>
+</div>
+<!-- Add these password change modals to your dashboard.html body -->
+
+<!-- Password Change Success Modal -->
+<div id="passwordSuccessModal" class="modal">
+    <div class="modal-content">
+        <span class="close" id="closePasswordSuccessModal">&times;</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#4caf50" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:10px;">
+            <path d="M9 12l2 2 4-4"></path>
+            <circle cx="12" cy="12" r="10"></circle>
+        </svg>
+        <p class="password-modal-title password-success-title">Password Changed Successfully!</p>
+        <p class="password-modal-subtitle">You can change it again in 7 days.</p>
+    </div>
+</div>
+
+<!-- Password Change Cooldown Modal -->
+<div id="passwordCooldownModal" class="modal">
+    <div class="modal-content">
+        <span class="close" id="closePasswordCooldownModal">&times;</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ffc107" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:10px;">
+            <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"></path>
+            <line x1="12" y1="9" x2="12" y2="13"></line>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+        <p class="password-modal-title password-cooldown-title">Password Change Restricted</p>
+        <p id="passwordCooldownMessage" class="password-modal-subtitle"></p>
+    </div>
+</div>
+<script>
+    // All DOM element variables are the same...
+    const profileBtn = document.getElementById('profileBtn');
+    const notificationBtn = document.getElementById('notificationBtn');
+    const redDot = document.getElementById('redDot');
+    const profileModal = document.getElementById('profileModal');
+    const notificationModal = document.getElementById('notificationModal');
+    const messageModal = document.getElementById('messageModal');
+    const closeProfileModalBtn = document.getElementById('closeProfileModalBtn');
+    const closeNotificationModalBtn = document.getElementById('closeNotificationModalBtn');
+    const closeMessageModalBtn = document.getElementById('closeMessageModalBtn');
+    const editProfileBtn = document.getElementById('editProfileBtn');
+    const editProfileModal = document.getElementById('editProfileModal');
+    const closeEditModalBtn = document.getElementById('closeEditModalBtn');
+    const cancelEditBtn = document.getElementById('cancelEditBtn');
+    const saveProfileBtn = document.getElementById('saveProfileBtn');
+    const usernameInput = document.getElementById('username');
+    const greeting = document.getElementById('greeting');
+    const changeCurrencyBtn = document.getElementById('changeCurrencyBtn');
+    const currencyModal = document.getElementById('currencyModal');
+    const closeCurrencyModal = document.getElementById('closeCurrencyModal');
+    const currencyList = document.getElementById('currencyList');
+    const currencySearch = document.getElementById('currencySearch');
+    const notificationList = document.getElementById('notificationList');
+    const messageTitle = document.getElementById('messageTitle');
+    const messageContent = document.getElementById('messageContent');
+    const backToNotificationsBtn = document.getElementById('backToNotificationsBtn');
+    const deleteMessageBtn = document.getElementById('deleteMessageBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const balanceAmount = document.getElementById('balanceAmount');
+    const balanceDots = document.getElementById('balanceDots');
+    const toggleBalance = document.getElementById('toggleBalance');
+    const withdrawBtn = document.getElementById('withdrawBtn');
+    const withdrawModal = document.getElementById('withdrawModal');
+    const closeWithdrawModal = document.getElementById('closeWithdrawModal');
+    const editPaymentMethodBtn = document.getElementById('editPaymentMethodBtn');
+    const pinModal = document.getElementById('pinModal');
+    const closePinModal = document.getElementById('closePinModal');
+    const editPaymentMethodModal = document.getElementById('editPaymentMethodModal');
+    const closeEditPaymentMethod = document.getElementById('closeEditPaymentMethod');
+    const cancelEditPaymentMethod = document.getElementById('cancelEditPaymentMethod');
+    const savePaymentMethodBtn = document.getElementById('savePaymentMethod');
+    const paymentTypeInput = document.getElementById('paymentType');
+    const supportedMethods = ["PayPal", "ApplePay", "GooglePay", "SamsungPay", "Binance", "Coinbase", "CryptoCom", "Bitcoin", "Ethereum", "USDT", "Wise", "Skrill", "Payoneer", "Revolut", "Stripe", "GCash", "MPesa", "MTN", "Airtel", "Orange", "EcoCash", "Alipay", "WeChat", "Visa", "Mastercard", "Amex", "Card", "Bank", "Opay", "Cashapp", "Uba", "Revolut", "Palmpay"];
+    const supportedMethodsNormalized = supportedMethods.map(s => s.toLowerCase());
+    const paymentDetailsInput = document.getElementById('paymentDetails');
+    const suggestionsBox = document.getElementById('paymentSuggestions');
+    const currentPaymentMethod = document.getElementById('currentPaymentMethod');
+    const addPaymentMethodBtn = document.getElementById('addPaymentMethodBtn');
+    const withdrawAmount = document.getElementById('withdrawAmount');
+    const withdrawWarning = document.getElementById('withdrawWarning');
+    const proceedBtn = document.getElementById('proceedToWithdraw');
+    const purchasePinBtn = document.getElementById('purchasePinBtn');
+    const purchasePinModalBtn = document.getElementById('purchasePinModalBtn');
+    const purchasePinModal = document.getElementById('purchasePinModal');
+    const closePurchasePinModal = document.getElementById('closePurchasePinModal');
+    const buyHereBtn = document.getElementById('buyHereBtn');
+    const learnMoreBtn = document.getElementById('learnMoreBtn');
+    const withdrawalPendingModal = document.getElementById('withdrawalPendingModal');
+    const withdrawalSuccessModal = document.getElementById('withdrawalSuccessModal');
+    const closePendingModal = document.getElementById('closePendingModal');
+    const closeSuccessModal = document.getElementById('closeSuccessModal');
+    const pinInput = document.getElementById('pinInput');
+    const confirmPinBtn = document.getElementById('confirmWithdrawBtn');
+    const withdrawalFailedModal = document.getElementById('withdrawalFailedModal');
+    const closeFailedModal = document.getElementById('closeFailedModal');
+
+    let currentUser = null;
+    let notifications = [];
+    let transactions = [];
+    let currentBalance = 100.00;
+    let isBalanceVisible = true;
+    let currentCurrency = { code: 'USD', symbol: '$', rate: 1, flag: '🇺🇸' };
+    const defaultNotifications = [
+        { id: 1, title: "Welcome to our platform", preview: "Thank you for joining us...", content: "Thank you for joining our platform. ..." },
+        { id: 2, title: "New feature available", preview: "We've added exciting new features...", content: "We've added exciting new features to enhance your experience ..." }
+    ];
+
+    function saveState() {
+    if (!currentUser) return;
+    const prevData = JSON.parse(localStorage.getItem(currentUser)) || {};
+    const userAccountData = {
+    username: greeting.textContent.replace('Hello ', '').replace('!', ''),
+    paymentMethod: prevData.paymentMethod || currentPaymentMethod.textContent,
+    paymentType: prevData.paymentType || paymentTypeInput.value.trim(),
+    paymentDetails: prevData.paymentDetails || paymentDetailsInput.value.trim(),
+    balance: currentBalance,
+    isBalanceVisible: isBalanceVisible,
+    notifications: notifications,
+    transactions: transactions,
+    currency: currentCurrency,
+    activationPin: prevData.activationPin
+};
+    localStorage.setItem(currentUser, JSON.stringify(userAccountData));
+}
+
+    function loadState() {
+        if (!currentUser) return;
+        const userAccountString = localStorage.getItem(currentUser);
+        if (userAccountString) {
+            const data = JSON.parse(userAccountString);
+            currentBalance = data.balance !== undefined ? data.balance : 0;
+paymentTypeInput.value = data.paymentType || '';
+paymentDetailsInput.value = data.paymentDetails || '';
+currentPaymentMethod.textContent = shortenText(data.paymentMethod || "No payment method set.", 22);
+            isBalanceVisible = data.isBalanceVisible !== undefined ? data.isBalanceVisible : true;
+            notifications = data.notifications || defaultNotifications;
+            transactions = data.transactions || [];
+            currentCurrency = data.currency || { code: 'USD', symbol: '$', rate: 1, flag: '🇺🇸' };
+            greeting.textContent = `Hello ${data.username || currentUser}!`;
+            profileBtn.textContent = (data.username || currentUser).charAt(0).toUpperCase();
+            usernameInput.value = data.username || currentUser;
+            currentPaymentMethod.textContent = shortenText(data.paymentMethod || "No payment method set.", 22);
+        } else {
+            greeting.textContent = `Hello ${currentUser}!`;
+            profileBtn.textContent = currentUser.charAt(0).toUpperCase();
+            usernameInput.value = currentUser;
+            currentBalance = 100.00;
+            isBalanceVisible = true;
+            notifications = defaultNotifications;
+            transactions = [];
+            currentCurrency = { code: 'USD', symbol: '$', rate: 1, flag: '🇺🇸' };
+            currentPaymentMethod.textContent = "No payment method set.";
+            saveState();
+        }
+        updateBalanceDisplay();
+        updateBalanceVisibility();
+        renderNotifications();
+        renderTransactions();
+    }
+
+    function initializeUserSession() {
+        let user = localStorage.getItem('currentUser');
+        if (user) {
+            sessionStorage.setItem('currentUser', user);
+            currentUser = user.trim().toLowerCase();
+            loadState();
+        } else {
+            window.location.href = 'login.html';
+        }
+    }
+
+    // --- PIN Logic ---
+    function getUserActivationPin() {
+        if (!currentUser) return "";
+        try {
+            const userData = JSON.parse(localStorage.getItem(currentUser));
+            return userData && userData.activationPin ? userData.activationPin : "";
+        } catch (e) {
+            return "";
+        }
+    }
+
+    confirmPinBtn.addEventListener('click', () => {
+        const enteredPIN = pinInput.value.trim();
+        const correctPIN = getUserActivationPin();
+        const pinError = document.getElementById('pinError');
+        if (enteredPIN.length < 4 || enteredPIN.length > 8) {
+            pinError.textContent = "PIN must be 4 to 8 characters long."; pinError.style.display = 'block'; return;
+        }
+        if (enteredPIN === correctPIN) {
+            pinError.style.display = 'none'; pinModal.style.display = 'none'; withdrawalPendingModal.style.display = 'block';
+            const amount = parseFloat(withdrawAmount.value);
+            if (!isNaN(amount)) {
+                addTransactionAndSubmitForApproval(currentPaymentMethod.textContent, amount, "pending");
+                const amountInUSD = amount / currentCurrency.rate;
+                currentBalance -= amountInUSD;
+                updateBalanceDisplay();
+                saveState();
+            }
+        } else {
+            pinError.textContent = "Incorrect PIN ❌"; pinError.style.display = 'block';
+        }
+    });
+
+    function addTransactionAndSubmitForApproval(method, amountInCurrentCurrency, status) {
+    const amountVal = parseFloat(amountInCurrentCurrency);
+    if (isNaN(amountVal)) return;
+
+    const transactionId = Date.now();
+const refNumber = "TXN-" + new Date(transactionId).toISOString().replace(/[-:T.Z]/g, "").slice(0, 14);
+    const amountInUSD = amountVal / currentCurrency.rate;
+    const dateStr = new Date(transactionId).toLocaleString('en-US');
+
+    let logo = 'assets/logos/default.png';
+    const methodClean = (method || '').trim().toLowerCase().replace(/[\s\-\(\)]/g, "");
+    if (methodClean.includes("paypal")) logo = "assets/logos/paypal.png";
+    else if (methodClean.includes("applepay")) logo = "assets/logos/applepay.png";
+    else if (methodClean.includes("googlepay")) logo = "assets/logos/googlepay.png";
+    else if (methodClean.includes("samsungpay")) logo = "assets/logos/samsungpay.png";
+    else if (methodClean.includes("binance")) logo = "assets/logos/binance.png";
+    else if (methodClean.includes("coinbase")) logo = "assets/logos/coinbase.png";
+    else if (methodClean.includes("cryptocom")) logo = "assets/logos/cryptocom.png";
+    else if (methodClean.includes("bitcoin")) logo = "assets/logos/bitcoin.png";
+    else if (methodClean.includes("ethereum")) logo = "assets/logos/ethereum.png";
+    else if (methodClean.includes("usdt")) logo = "assets/logos/usdt.png";
+    else if (methodClean.includes("wise")) logo = "assets/logos/wise.png";
+    else if (methodClean.includes("skrill")) logo = "assets/logos/skrill.png";
+    else if (methodClean.includes("payoneer")) logo = "assets/logos/payoneer.png";
+    else if (methodClean.includes("revolut")) logo = "assets/logos/revolut.png";
+    else if (methodClean.includes("stripe")) logo = "assets/logos/stripe.png";
+    else if (methodClean.includes("gcash")) logo = "assets/logos/gcash.png";
+    else if (methodClean.includes("mpesa")) logo = "assets/logos/mpesa.png";
+    else if (methodClean.includes("mtn")) logo = "assets/logos/mtn.png";
+    else if (methodClean.includes("airtel")) logo = "assets/logos/airtel.png";
+    else if (methodClean.includes("orange")) logo = "assets/logos/orange.png";
+    else if (methodClean.includes("ecocash")) logo = "assets/logos/ecocash.png";
+    else if (methodClean.includes("alipay")) logo = "assets/logos/alipay.png";
+    else if (methodClean.includes("wechat")) logo = "assets/logos/wechat.png";
+    else if (methodClean.includes("visa")) logo = "assets/logos/visa.png";
+    else if (methodClean.includes("mastercard")) logo = "assets/logos/mastercard.png";
+    else if (methodClean.includes("amex") || methodClean.includes("americanexpress")) logo = "assets/logos/amex.png";
+    else if (methodClean.includes("card") || methodClean.includes("bank")) logo = "assets/logos/bank.png";
+    else if (methodClean.includes("uba")) logo = "assets/logos/uba.png";
+    else if (methodClean.includes("opay")) logo = "assets/logos/opay.png";
+    else if (methodClean.includes("palmpay")) logo = "assets/logos/palmpay.png";
+    else if (methodClean.includes("cashapp")) logo = "assets/logos/cashapp.png";
+
+    // include raw details
+    const userData = JSON.parse(localStorage.getItem(currentUser)) || {};
+    const paymentType = userData.paymentType || '';
+    const paymentDetails = userData.paymentDetails || '';
+
+    // add to memory
+    transactions.unshift({
+        id: transactionId,
+        ref: refNumber,
+        method,
+        amount: -amountInUSD,
+        date: dateStr,
+        logo,
+        status,
+        paymentType,
+        paymentDetails
+    });
+
+    // add to pending withdrawals
+    const pendingWithdrawals = JSON.parse(localStorage.getItem('pendingWithdrawals') || '[]');
+    pendingWithdrawals.push({
+        id: transactionId,
+        username: currentUser,
+        amount: amountInCurrentCurrency,
+        currency: currentCurrency,
+        method,
+        date: dateStr
+    });
+    localStorage.setItem('pendingWithdrawals', JSON.stringify(pendingWithdrawals));
+
+    // save state
+    saveState();
+    renderTransactions();
+}
+function shortenText(text, maxLength = 18) {
+    if (!text) return '';
+    return text.length > maxLength ? text.slice(0, maxLength) + '...' : text;
+}
+
+    function updateBalanceDisplay() {
+        const balanceInCurrentCurrency = currentBalance * currentCurrency.rate;
+        const formattedBalance = formatNumberWithCommas(balanceInCurrentCurrency.toFixed(2));
+        balanceAmount.textContent = `${currentCurrency.symbol}${formattedBalance}`;
+    }
+    function updateBalanceVisibility() { balanceAmount.style.display = isBalanceVisible ? 'block' : 'none'; balanceDots.style.display = isBalanceVisible ? 'none' : 'block'; toggleBalance.querySelectorAll('.eye-open').forEach(e => e.style.display = isBalanceVisible ? 'inline' : 'none'); toggleBalance.querySelectorAll('.eye-slash').forEach(e => e.style.display = isBalanceVisible ? 'none' : 'inline'); }
+    function formatNumberWithCommas(number) {
+        const parts = number.toString().split('.');
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        return parts.join('.');
+    }
+
+    function validateWithdrawForm() {
+        const amt = parseFloat(withdrawAmount.value);
+        const convertedBalance = currentBalance * currentCurrency.rate;
+        const minWithdraw = 10 * currentCurrency.rate;
+        const hasPaymentMethod = currentPaymentMethod && currentPaymentMethod.textContent.trim() !== "No payment method set.";
+        
+        if (isNaN(amt) || amt < minWithdraw) {
+            const formattedMin = formatNumberWithCommas(minWithdraw.toFixed(2));
+            withdrawWarning.textContent = `Minimum withdrawal amount is ${currentCurrency.symbol}${formattedMin}.`;
+            withdrawWarning.style.display = 'inline';
+        } else if (amt > convertedBalance) {
+            withdrawWarning.textContent = "Insufficient funds.";
+            withdrawWarning.style.display = 'inline';
+        } else if (!hasPaymentMethod) {
+            withdrawWarning.textContent = "Please set a payment method before proceeding.";
+            withdrawWarning.style.display = 'inline';
+        } else {
+            withdrawWarning.style.display = 'none';
+        }
+        
+        const isValid = !isNaN(amt) && amt >= minWithdraw && amt <= convertedBalance && hasPaymentMethod;
+        proceedBtn.disabled = !isValid;
+        proceedBtn.style.opacity = isValid ? 1 : 0.5;
+        proceedBtn.style.cursor = isValid ? 'pointer' : 'not-allowed';
+    }
+    function renderNotifications() { notificationList.innerHTML = ''; if (notifications.length === 0) { const li = document.createElement('li'); li.className = 'no-notifications'; li.textContent = 'No new messages'; notificationList.appendChild(li); redDot.style.display = 'none'; return; } notifications.forEach(n => { const li = document.createElement('li'); li.className = 'notification-item'; li.dataset.id = n.id; li.innerHTML = `<div class="notification-title">${n.title}</div><div class="notification-preview">${n.preview}</div>`; li.addEventListener('click', () => showNotificationDetail(n)); notificationList.appendChild(li); }); redDot.style.display = 'block'; }
+    function showNotificationDetail(notification) { messageTitle.textContent = notification.title; messageContent.textContent = notification.content; notificationModal.style.display = 'none'; messageModal.style.display = 'block'; deleteMessageBtn.dataset.id = notification.id; }
+    deleteMessageBtn.addEventListener('click', () => { const id = parseInt(deleteMessageBtn.dataset.id, 10); notifications = notifications.filter(n => n.id !== id); saveState(); renderNotifications(); messageModal.style.display = 'none'; notificationModal.style.display = 'block'; });
+    profileBtn.addEventListener('click', e => { e.stopPropagation(); profileModal.style.display = 'block'; });
+    notificationBtn.addEventListener('click', e => { e.stopPropagation(); notificationModal.style.display = 'block'; redDot.style.display = 'none'; });
+    closeProfileModalBtn.addEventListener('click', () => profileModal.style.display = 'none');
+    closeNotificationModalBtn.addEventListener('click', () => notificationModal.style.display = 'none');
+    closeMessageModalBtn.addEventListener('click', () => messageModal.style.display = 'none');
+    backToNotificationsBtn.addEventListener('click', () => { messageModal.style.display = 'none'; notificationModal.style.display = 'block'; });
+    editProfileBtn.addEventListener('click', () => { profileModal.style.display = 'none'; editProfileModal.style.display = 'block'; });
+    closeEditModalBtn.addEventListener('click', () => editProfileModal.style.display = 'none');
+    cancelEditBtn.addEventListener('click', () => editProfileModal.style.display = 'none');
+    logoutBtn.addEventListener('click', () => {
+        sessionStorage.removeItem('currentUser');
+        localStorage.removeItem('currentUser');
+        window.location.href = 'login.html';
+    });
+    // Updated saveProfileBtn event listener with input field reversion
+// Replace your existing saveProfileBtn event listener with this version
+
+// Add this to get the email input reference (if not already added)
+// Complete saveProfileBtn event listener with Username, Email, AND Password cooldowns
+// Replace your existing saveProfileBtn event listener with this comprehensive version
+
+// Add these to get input references (if not already added)
+const emailInput = document.getElementById('email');
+const passwordInput = document.getElementById('password');
+
+saveProfileBtn.addEventListener('click', e => {
+    e.preventDefault();
+    const newName = usernameInput.value.trim();
+    const newEmail = emailInput.value.trim();
+    const newPassword = passwordInput.value.trim();
+    
+    if (!newName) {
+        alert("Please enter a valid username.");
+        return;
+    }
+    
+    if (!newEmail) {
+        alert("Please enter a valid email.");
+        return;
+    }
+    
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(newEmail)) {
+        alert("Please enter a valid email address.");
+        return;
+    }
+    
+    // Password validation (only if user entered a new password)
+    if (newPassword && newPassword.length < 6) {
+        alert("Password must be at least 6 characters long.");
+        return;
+    }
+    
+    const oldUsername = currentUser;
+    const newUsername = newName.toLowerCase();
+    const userData = JSON.parse(localStorage.getItem(oldUsername)) || {};
+    const currentEmail = userData.email || "user@example.com";
+    const currentDisplayName = userData.username || currentUser;
+    
+    const now = Date.now();
+    const sevenDaysInMs = 7 * 24 * 60 * 60 * 1000;
+    
+    // Check username cooldown
+    let usernameCooldowns = JSON.parse(localStorage.getItem("usernameCooldowns") || "{}");
+    let usernameChangeBlocked = false;
+    let usernameTimeRemaining = 0;
+    
+    if (oldUsername !== newUsername && usernameCooldowns[oldUsername]) {
+        const lastChangeTime = usernameCooldowns[oldUsername];
+        const timeSinceLastChange = now - lastChangeTime;
+        
+        if (timeSinceLastChange < sevenDaysInMs) {
+            usernameChangeBlocked = true;
+            usernameTimeRemaining = sevenDaysInMs - timeSinceLastChange;
+        }
+    }
+    
+    // Check email cooldown
+    let emailCooldowns = JSON.parse(localStorage.getItem("emailCooldowns") || "{}");
+    let emailChangeBlocked = false;
+    let emailTimeRemaining = 0;
+    
+    if (currentEmail !== newEmail && emailCooldowns[oldUsername]) {
+        const lastEmailChangeTime = emailCooldowns[oldUsername];
+        const timeSinceLastEmailChange = now - lastEmailChangeTime;
+        
+        if (timeSinceLastEmailChange < sevenDaysInMs) {
+            emailChangeBlocked = true;
+            emailTimeRemaining = sevenDaysInMs - timeSinceLastEmailChange;
+        }
+    }
+    
+    // Check password cooldown (only if user entered a new password)
+    let passwordCooldowns = JSON.parse(localStorage.getItem("passwordCooldowns") || "{}");
+    let passwordChangeBlocked = false;
+    let passwordTimeRemaining = 0;
+    
+    if (newPassword && passwordCooldowns[oldUsername]) {
+        const lastPasswordChangeTime = passwordCooldowns[oldUsername];
+        const timeSinceLastPasswordChange = now - lastPasswordChangeTime;
+        
+        if (timeSinceLastPasswordChange < sevenDaysInMs) {
+            passwordChangeBlocked = true;
+            passwordTimeRemaining = sevenDaysInMs - timeSinceLastPasswordChange;
+        }
+    }
+    
+    // Handle blocked changes - REVERT INPUT FIELDS
+    if (usernameChangeBlocked || emailChangeBlocked || passwordChangeBlocked) {
+        // Determine which cooldown has the longest remaining time
+        let maxTimeRemaining = Math.max(usernameTimeRemaining, emailTimeRemaining, passwordTimeRemaining);
+        let primaryRestriction = "";
+        let modalToShow = "";
+        
+        if (usernameChangeBlocked && usernameTimeRemaining === maxTimeRemaining) {
+            primaryRestriction = "username";
+            modalToShow = "usernameCooldownModal";
+        } else if (emailChangeBlocked && emailTimeRemaining === maxTimeRemaining) {
+            primaryRestriction = "email";
+            modalToShow = "emailCooldownModal";
+        } else if (passwordChangeBlocked && passwordTimeRemaining === maxTimeRemaining) {
+            primaryRestriction = "password";
+            modalToShow = "passwordCooldownModal";
+        }
+        
+        const daysLeft = Math.floor(maxTimeRemaining / (24 * 60 * 60 * 1000));
+        const hoursLeft = Math.floor((maxTimeRemaining % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+        
+        let timeText = "";
+        if (daysLeft > 0) {
+            timeText = `${daysLeft} days and ${hoursLeft} hours`;
+        } else {
+            timeText = `${hoursLeft} hours`;
+        }
+        
+        // Create message based on what's blocked
+        let blockedItems = [];
+        if (usernameChangeBlocked) blockedItems.push("username");
+        if (emailChangeBlocked) blockedItems.push("email");
+        if (passwordChangeBlocked) blockedItems.push("password");
+        
+        let message = "";
+        if (blockedItems.length === 1) {
+            message = `You can only change your ${blockedItems[0]} once every 7 days. Time remaining: ${timeText}`;
+        } else {
+            const itemsList = blockedItems.join(", ").replace(/,([^,]*)$/, " and$1");
+            message = `${itemsList.charAt(0).toUpperCase() + itemsList.slice(1)} changes are restricted. Time remaining: ${timeText}`;
+        }
+        
+        // REVERT INPUT FIELDS TO ORIGINAL VALUES
+        if (usernameChangeBlocked) {
+            usernameInput.value = currentDisplayName;
+        }
+        if (emailChangeBlocked) {
+            emailInput.value = currentEmail;
+        }
+        if (passwordChangeBlocked) {
+            passwordInput.value = ""; // Clear password field
+        }
+        
+        // Show appropriate modal with message
+        if (modalToShow === "usernameCooldownModal") {
+            document.getElementById('cooldownMessage').textContent = message;
+            document.getElementById('usernameCooldownModal').style.display = 'block';
+        } else if (modalToShow === "emailCooldownModal") {
+            document.getElementById('emailCooldownMessage').textContent = message;
+            document.getElementById('emailCooldownModal').style.display = 'block';
+        } else if (modalToShow === "passwordCooldownModal") {
+            document.getElementById('passwordCooldownMessage').textContent = message;
+            document.getElementById('passwordCooldownModal').style.display = 'block';
+        }
+        
+        editProfileModal.style.display = 'none';
+        return;
+    }
+    
+    // Check if new username already exists (only if username is changing)
+    if (oldUsername !== newUsername) {
+        let users = JSON.parse(localStorage.getItem("users") || "{}");
+        if (users[newUsername]) {
+            // REVERT USERNAME FIELD WHEN USERNAME ALREADY EXISTS
+            usernameInput.value = currentDisplayName;
+            alert("Username already exists. Please choose a different username.");
+            return;
+        }
+    }
+    
+    // Determine what changed
+    const usernameChanged = oldUsername !== newUsername;
+    const emailChanged = currentEmail !== newEmail;
+    const passwordChanged = newPassword && newPassword.length > 0;
+    
+    // If nothing changed, just update display
+    if (!usernameChanged && !emailChanged && !passwordChanged) {
+        greeting.textContent = `Hello ${newName}!`;
+        profileBtn.textContent = newName.charAt(0).toUpperCase();
+        editProfileModal.style.display = 'none';
+        return;
+    }
+    
+    // Proceed with changes
+    try {
+        let finalUsername = oldUsername;
+        
+        // Handle username change if needed
+        if (usernameChanged) {
+            let users = JSON.parse(localStorage.getItem("users") || "{}");
+            if (users[oldUsername]) {
+                users[newUsername] = users[oldUsername];
+                delete users[oldUsername];
+                localStorage.setItem("users", JSON.stringify(users));
+            }
+            
+            finalUsername = newUsername;
+            
+            // Update all username references
+            let pending = JSON.parse(localStorage.getItem("pendingWithdrawals") || "[]");
+            for (let i = 0; i < pending.length; i++) {
+                if (pending[i].username && pending[i].username.toLowerCase() === oldUsername) {
+                    pending[i].username = newUsername;
+                }
+            }
+            localStorage.setItem("pendingWithdrawals", JSON.stringify(pending));
+            
+            let pinReqs = JSON.parse(localStorage.getItem("pinPaymentRequests") || "[]");
+            for (let i = 0; i < pinReqs.length; i++) {
+                if (pinReqs[i].user && pinReqs[i].user.toLowerCase() === oldUsername) {
+                    pinReqs[i].user = newUsername;
+                }
+            }
+            localStorage.setItem("pinPaymentRequests", JSON.stringify(pinReqs));
+            
+            let approvalData = JSON.parse(localStorage.getItem("withdrawalApproval") || "{}");
+            if (approvalData.userId && approvalData.userId.toLowerCase() === oldUsername) {
+                approvalData.userId = newUsername;
+                localStorage.setItem("withdrawalApproval", JSON.stringify(approvalData));
+            }
+            
+            // Record username change timestamp
+            usernameCooldowns[newUsername] = now;
+            if (usernameCooldowns[oldUsername]) {
+                delete usernameCooldowns[oldUsername];
+            }
+            localStorage.setItem("usernameCooldowns", JSON.stringify(usernameCooldowns));
+        }
+        
+        // Handle password change if needed
+        if (passwordChanged) {
+            let users = JSON.parse(localStorage.getItem("users") || "{}");
+            if (users[finalUsername]) {
+                users[finalUsername] = newPassword; // Update password in login system
+                localStorage.setItem("users", JSON.stringify(users));
+            }
+            
+            // Record password change timestamp
+            passwordCooldowns[finalUsername] = now;
+            localStorage.setItem("passwordCooldowns", JSON.stringify(passwordCooldowns));
+        }
+        
+        // Update user data
+        userData.username = newName;
+        userData.email = newEmail;
+        
+        // Record email change timestamp if email changed
+        if (emailChanged) {
+            emailCooldowns[finalUsername] = now;
+            localStorage.setItem("emailCooldowns", JSON.stringify(emailCooldowns));
+        }
+        
+        // Save user data under correct username key
+        localStorage.setItem(finalUsername, JSON.stringify(userData));
+        if (usernameChanged) {
+            localStorage.removeItem(oldUsername);
+        }
+        
+        // Update current user references
+        currentUser = finalUsername;
+        localStorage.setItem("currentUser", finalUsername);
+        sessionStorage.setItem("currentUser", finalUsername);
+        
+        // Update display
+        greeting.textContent = `Hello ${newName}!`;
+        profileBtn.textContent = newName.charAt(0).toUpperCase();
+        
+        // Clear password field after successful change
+        passwordInput.value = "";
+        
+        // Save state
+        saveState();
+        
+        // Show appropriate success modal
+        if (passwordChanged && (usernameChanged || emailChanged)) {
+            // If password + other changes, prioritize password success
+            document.getElementById('passwordSuccessModal').style.display = 'block';
+        } else if (usernameChanged && emailChanged) {
+            document.getElementById('usernameSuccessModal').style.display = 'block';
+        } else if (usernameChanged) {
+            document.getElementById('usernameSuccessModal').style.display = 'block';
+        } else if (emailChanged) {
+            document.getElementById('emailSuccessModal').style.display = 'block';
+        } else if (passwordChanged) {
+            document.getElementById('passwordSuccessModal').style.display = 'block';
+        }
+        
+    } catch (error) {
+        // REVERT INPUT FIELDS ON ERROR
+        usernameInput.value = currentDisplayName;
+        emailInput.value = currentEmail;
+        passwordInput.value = "";
+        alert("Error updating profile. Please try again.");
+    }
+    
+    editProfileModal.style.display = 'none';
+});
+
+// Event listeners for closing the password modals
+document.getElementById('closePasswordSuccessModal').addEventListener('click', () => {
+    document.getElementById('passwordSuccessModal').style.display = 'none';
+});
+
+document.getElementById('closePasswordCooldownModal').addEventListener('click', () => {
+    document.getElementById('passwordCooldownModal').style.display = 'none';
+});
+
+// Update the window click event listener to include password modals
+window.addEventListener('click', function(e) {
+    const usernameSuccessModal = document.getElementById('usernameSuccessModal');
+    const usernameCooldownModal = document.getElementById('usernameCooldownModal');
+    const emailSuccessModal = document.getElementById('emailSuccessModal');
+    const emailCooldownModal = document.getElementById('emailCooldownModal');
+    const passwordSuccessModal = document.getElementById('passwordSuccessModal');
+    const passwordCooldownModal = document.getElementById('passwordCooldownModal');
+    
+    if (e.target === usernameSuccessModal) {
+        usernameSuccessModal.style.display = 'none';
+    }
+    if (e.target === usernameCooldownModal) {
+        usernameCooldownModal.style.display = 'none';
+    }
+    if (e.target === emailSuccessModal) {
+        emailSuccessModal.style.display = 'none';
+    }
+    if (e.target === emailCooldownModal) {
+        emailCooldownModal.style.display = 'none';
+    }
+    if (e.target === passwordSuccessModal) {
+        passwordSuccessModal.style.display = 'none';
+    }
+    if (e.target === passwordCooldownModal) {
+        passwordCooldownModal.style.display = 'none';
+    }
+});
+
+// Add event listeners for closing the new username modals
+document.getElementById('closeUsernameSuccessModal').addEventListener('click', () => {
+    document.getElementById('usernameSuccessModal').style.display = 'none';
+});
+
+document.getElementById('closeUsernameCooldownModal').addEventListener('click', () => {
+    document.getElementById('usernameCooldownModal').style.display = 'none';
+});
+
+// Close modals when clicking outside
+window.addEventListener('click', function(e) {
+    const successModal = document.getElementById('usernameSuccessModal');
+    const cooldownModal = document.getElementById('usernameCooldownModal');
+    
+    if (e.target === successModal) {
+        successModal.style.display = 'none';
+    }
+    if (e.target === cooldownModal) {
+        cooldownModal.style.display = 'none';
+    }
+});
+    toggleBalance.addEventListener('click', () => { isBalanceVisible = !isBalanceVisible; updateBalanceVisibility(); saveState(); });
+    withdrawBtn.addEventListener('click', () => { withdrawModal.style.display = 'block'; validateWithdrawForm(); });
+    closeWithdrawModal.addEventListener('click', () => withdrawModal.style.display = 'none');
+    editPaymentMethodBtn.addEventListener('click', () => {
+    withdrawModal.classList.add('dimmed');
+    editPaymentMethodModal.style.display = 'block';
+
+    // Prefill fields from localStorage
+    const userData = JSON.parse(localStorage.getItem(currentUser)) || {};
+    paymentTypeInput.value = userData.paymentType || '';
+    paymentDetailsInput.value = userData.paymentDetails || '';
+});
+    closeEditPaymentMethod.addEventListener('click', () => { editPaymentMethodModal.style.display = 'none'; withdrawModal.classList.remove('dimmed'); });
+    cancelEditPaymentMethod.addEventListener('click', () => { editPaymentMethodModal.style.display = 'none'; withdrawModal.classList.remove('dimmed'); });
+    savePaymentMethodBtn.addEventListener('click', () => { 
+    const type = paymentTypeInput.value.trim(); 
+    const details = paymentDetailsInput.value.trim(); 
+    const paymentError = document.getElementById('paymentError'); 
+    if (type && details) { 
+        const normalizedType = type.toLowerCase().replace(/\s+/g, ''); 
+        const isSupported = supportedMethodsNormalized.some(method => normalizedType.includes(method)); 
+        if (!isSupported) { 
+            paymentError.textContent = "This payment method is not available ❌"; 
+            paymentError.style.display = 'block'; 
+            return; 
+        } 
+        const saved = `${type} (${details})`;
+        currentPaymentMethod.textContent = shortenText(saved, 22);
+
+        // Save individual fields for editing later
+        const userData = JSON.parse(localStorage.getItem(currentUser)) || {};
+        userData.paymentType = type;
+        userData.paymentDetails = details;
+        userData.paymentMethod = saved;
+        localStorage.setItem(currentUser, JSON.stringify(userData));
+
+        // REMOVE THIS LINE: saveState();
+
+        paymentError.style.display = 'none'; 
+        editPaymentMethodModal.style.display = 'none'; 
+        withdrawModal.classList.remove('dimmed'); 
+        validateWithdrawForm(); 
+    } else { 
+        paymentError.textContent = "Please fill out both fields."; 
+        paymentError.style.display = 'block'; 
+    } 
+});
+    paymentTypeInput.addEventListener('input', () => {
+        const query = paymentTypeInput.value.trim().toLowerCase();
+        suggestionsBox.innerHTML = '';
+        paymentTypeInput.addEventListener('input', () => {
+            const paymentError = document.getElementById('paymentError');
+            if (paymentError) {
+                paymentError.style.display = 'none';
+            }
+        });
+        paymentDetailsInput.addEventListener('input', () => {
+            const paymentError = document.getElementById('paymentError');
+            if (paymentError) {
+                paymentError.style.display = 'none';
+            }
+        });
+        if (!query) {
+            suggestionsBox.style.display = 'none';
+            return;
+        }
+        const matches = supportedMethods.filter(method =>
+            method.toLowerCase().startsWith(query)
+        );
+        if (matches.length === 0) {
+            suggestionsBox.style.display = 'none';
+            return;
+        }
+        matches.forEach(method => {
+            const li = document.createElement('li');
+            li.textContent = method;
+            li.style.padding = '6px 10px';
+            li.style.cursor = 'pointer';
+            li.addEventListener('click', () => {
+                paymentTypeInput.value = method;
+                suggestionsBox.style.display = 'none';
+            });
+            suggestionsBox.appendChild(li);
+        });
+        suggestionsBox.style.display = 'block';
+    });
+    document.addEventListener('click', (e) => {
+        if (!paymentTypeInput.contains(e.target) &&
+            !suggestionsBox.contains(e.target)) {
+            suggestionsBox.style.display = 'none';
+        }
+    });
+    addPaymentMethodBtn.addEventListener('click', () => { withdrawModal.style.display = 'none'; editPaymentMethodModal.style.display = 'block'; });
+    proceedBtn.disabled = true; proceedBtn.style.opacity = 0.5; proceedBtn.style.cursor = 'not-allowed';
+    withdrawAmount.addEventListener('input', validateWithdrawForm);
+    proceedBtn.addEventListener('click', () => { const hasPaymentMethod = currentPaymentMethod.textContent.trim() !== "No payment method set."; if (!hasPaymentMethod) { withdrawModal.style.display = 'none'; editPaymentMethodModal.style.display = 'block'; return; } withdrawModal.style.display = 'none'; pinModal.style.display = 'block'; });
+    closePinModal.addEventListener('click', () => pinModal.style.display = 'none');
+    function openPurchasePinModal() {
+        if (pinModal) {
+            pinModal.style.zIndex = '999';
+        }
+        if (purchasePinModal) {
+            purchasePinModal.style.display = 'block';
+            purchasePinModal.style.zIndex = '1000';
+        }
+    }
+    [purchasePinBtn, purchasePinModalBtn].forEach(btn => { if (btn) btn.addEventListener('click', openPurchasePinModal); });
+    if (closePurchasePinModal) {
+        closePurchasePinModal.addEventListener('click', () => {
+            purchasePinModal.style.display = 'none';
+            if (pinModal) {
+                pinModal.style.zIndex = '1000';
+            }
+        });
+    }
+    if (buyHereBtn) // When redirecting to purchase pin page:
+buyHereBtn.addEventListener('click', () => {
+    purchasePinModal.style.display = 'none';
+    // Save user in session/localStorage
+    localStorage.setItem('currentUser', currentUser);
+    sessionStorage.setItem('currentUser', currentUser);
+    document.getElementById('buyHereModal').style.display = 'block';
+    setTimeout(() => {
+        window.location.href = 'purchase pin.html';
+    }, 2000);
+});
+    if (learnMoreBtn) learnMoreBtn.addEventListener('click', () => { purchasePinModal.classList.add('dimmed'); document.getElementById('learnMoreModal').style.display = 'flex'; });
+    const closeLearnMoreModal = document.getElementById('closeLearnMoreModal');
+    if (closeLearnMoreModal) closeLearnMoreModal.addEventListener('click', () => { document.getElementById('learnMoreModal').style.display = 'none'; purchasePinModal.classList.remove('dimmed'); });
+    // Enhanced Currency System with Real-time Conversion
+// Replace your existing currency-related code in dashboard.html with this
+
+// API Configuration
+const EXCHANGE_API_KEY = '7a0272e9aa0261ae6b9a862d';
+const EXCHANGE_API_URL = `https://v6.exchangerate-api.com/v6/${EXCHANGE_API_KEY}/latest/USD`;
+
+// Enhanced currency list with more currencies
+const currencies = [
+   { code: 'USD', symbol: '$', rate: 1, flag: '🇺🇸', name: 'US Dollar' },
+    { code: 'EUR', symbol: '€', rate: 0.93, flag: '🇪🇺', name: 'Euro' },
+    { code: 'GBP', symbol: '£', rate: 0.81, flag: '🇬🇧', name: 'British Pound' },
+    { code: 'JPY', symbol: '¥', rate: 144.5, flag: '🇯🇵', name: 'Japanese Yen' },
+    { code: 'NGN', symbol: '₦', rate: 750, flag: '🇳🇬', name: 'Nigerian Naira' },
+    { code: 'CAD', symbol: 'C$', rate: 1.35, flag: '🇨🇦', name: 'Canadian Dollar' },
+    { code: 'AUD', symbol: 'A$', rate: 1.52, flag: '🇦🇺', name: 'Australian Dollar' },
+    { code: 'INR', symbol: '₹', rate: 83.12, flag: '🇮🇳', name: 'Indian Rupee' },
+    { code: 'CHF', symbol: 'CHF', rate: 0.92, flag: '🇨🇭', name: 'Swiss Franc' },
+    { code: 'CNY', symbol: '¥', rate: 6.91, flag: '🇨🇳', name: 'Chinese Yuan' },
+    { code: 'BRL', symbol: 'R$', rate: 5.12, flag: '🇧🇷', name: 'Brazilian Real' },
+    { code: 'ZAR', symbol: 'R', rate: 19.84, flag: '🇿🇦', name: 'South African Rand' },
+    { code: 'MXN', symbol: '$', rate: 17.05, flag: '🇲🇽', name: 'Mexican Peso' },
+    { code: 'SGD', symbol: 'S$', rate: 1.37, flag: '🇸🇬', name: 'Singapore Dollar' },
+    { code: 'KRW', symbol: '₩', rate: 1331, flag: '🇰🇷', name: 'South Korean Won' },
+    { code: 'RUB', symbol: '₽', rate: 93.25, flag: '🇷🇺', name: 'Russian Ruble' },
+    { code: 'TRY', symbol: '₺', rate: 33.2, flag: '🇹🇷', name: 'Turkish Lira' },
+    { code: 'SEK', symbol: 'kr', rate: 10.6, flag: '🇸🇪', name: 'Swedish Krona' },
+    { code: 'NOK', symbol: 'kr', rate: 10.8, flag: '🇳🇴', name: 'Norwegian Krone' },
+    { code: 'DKK', symbol: 'kr', rate: 7.03, flag: '🇩🇰', name: 'Danish Krone' },
+    { code: 'PLN', symbol: 'zł', rate: 4.33, flag: '🇵🇱', name: 'Polish Zloty' },
+    { code: 'AED', symbol: 'د.إ', rate: 3.67, flag: '🇦🇪', name: 'UAE Dirham' },
+    { code: 'SAR', symbol: '﷼', rate: 3.75, flag: '🇸🇦', name: 'Saudi Riyal' },
+    { code: 'HKD', symbol: 'HK$', rate: 7.85, flag: '🇭🇰', name: 'Hong Kong Dollar' },
+    { code: 'TWD', symbol: 'NT$', rate: 30.9, flag: '🇹🇼', name: 'Taiwan Dollar' },
+    { code: 'PHP', symbol: '₱', rate: 56.7, flag: '🇵🇭', name: 'Philippine Peso' },
+    { code: 'IDR', symbol: 'Rp', rate: 15000, flag: '🇮🇩', name: 'Indonesian Rupiah' },
+    { code: 'VND', symbol: '₫', rate: 23900, flag: '🇻🇳', name: 'Vietnamese Dong' },
+    { code: 'MYR', symbol: 'RM', rate: 4.52, flag: '🇲🇾', name: 'Malaysian Ringgit' },
+    { code: 'THB', symbol: '฿', rate: 34.1, flag: '🇹🇭', name: 'Thai Baht' },
+    { code: 'PKR', symbol: '₨', rate: 280, flag: '🇵🇰', name: 'Pakistani Rupee' },
+    { code: 'EGP', symbol: '£', rate: 30.9, flag: '🇪🇬', name: 'Egyptian Pound' },
+
+    // Cryptocurrencies
+    { code: 'BTC', symbol: '₿', rate: 0.000031, flag: '🪙', name: 'Bitcoin' },
+    { code: 'ETH', symbol: 'Ξ', rate: 0.00045, flag: '🪙', name: 'Ethereum' },
+    { code: 'USDT', symbol: '₮', rate: 1, flag: '🪙', name: 'Tether' },
+    { code: 'BNB', symbol: 'ⓑ', rate: 0.0081, flag: '🪙', name: 'Binance Coin' },
+    { code: 'ADA', symbol: '₳', rate: 0.12, flag: '🪙', name: 'Cardano' },
+    { code: 'SOL', symbol: '◎', rate: 0.18, flag: '🪙', name: 'Solana' },
+    { code: 'DOGE', symbol: 'Ð', rate: 15.2, flag: '🪙', name: 'Dogecoin' },
+    { code: 'DOT', symbol: '●', rate: 0.85, flag: '🪙', name: 'Polkadot' },
+    { code: 'XRP', symbol: '✕', rate: 1.15, flag: '🪙', name: 'Ripple' },
+    { code: 'LTC', symbol: 'Ł', rate: 0.005, flag: '🪙', name: 'Litecoin' }
+];
+
+let exchangeRates = {};
+let lastRateUpdate = 0;
+const RATE_UPDATE_INTERVAL = 3600000; // 1 hour in milliseconds
+
+// Fetch real-time exchange rates
+async function fetchExchangeRates() {
+    try {
+        const response = await fetch(EXCHANGE_API_URL);
+        if (!response.ok) throw new Error('Failed to fetch rates');
+        
+        const data = await response.json();
+        exchangeRates = data.conversion_rates;
+        lastRateUpdate = Date.now();
+        
+        // Update currencies array with real rates
+        currencies.forEach(currency => {
+            if (exchangeRates[currency.code]) {
+                currency.rate = exchangeRates[currency.code];
+            }
+        });
+        
+        // Update display if current currency is active
+        if (currentCurrency) {
+            updateBalanceDisplay();
+            renderTransactions();
+        }
+        
+        console.log('Exchange rates updated successfully');
+        return true;
+    } catch (error) {
+        console.error('Failed to fetch exchange rates:', error);
+        // Use fallback rates if API fails
+        return false;
+    }
+}
+
+// Check if rates need updating
+async function ensureFreshRates() {
+    const timeSinceUpdate = Date.now() - lastRateUpdate;
+    if (timeSinceUpdate > RATE_UPDATE_INTERVAL || Object.keys(exchangeRates).length === 0) {
+        await fetchExchangeRates();
+    }
+}
+
+// Enhanced currency selection with real-time rates
+changeCurrencyBtn.addEventListener('click', async () => {
+    // Show loading state
+    changeCurrencyBtn.style.opacity = '0.7';
+    changeCurrencyBtn.style.pointerEvents = 'none';
+    
+    await ensureFreshRates();
+    
+    // Restore button
+    changeCurrencyBtn.style.opacity = '1';
+    changeCurrencyBtn.style.pointerEvents = 'auto';
+    
+    currencyModal.style.display = 'block';
+    currencySearch.value = ''; // Add this line
+    renderCurrencyList(currencies);
+});
+
+// Enhanced currency list rendering
+function renderCurrencyList(list) {
+    currencyList.innerHTML = '';
+    list.forEach(currency => {
+        const li = document.createElement('li');
+        li.className = 'modal-item';
+        
+        // Calculate conversion rate display
+        const rateDisplay = currency.code === 'USD' ? '1.00' : currency.rate.toFixed(4);
+        const isCurrentCurrency = currentCurrency.code === currency.code;
+        
+        li.innerHTML = `
+            <div style="display: flex; align-items: center; width: 100%; ${isCurrentCurrency ? 'background-color: #e3f2fd; border-radius: 6px; padding: 4px;' : ''}">
+                <span style="font-size:18px; margin-right:12px;">${currency.flag}</span>
+                <div style="flex: 1;">
+                    <div style="font-weight: 500; color: #333;">${currency.symbol} - ${currency.code}</div>
+                    <div style="font-size: 12px; color: #666;">${currency.name}</div>
+                </div>
+                <div style="text-align: right; font-size: 12px; color: #888;">
+                    1 USD = ${rateDisplay} ${currency.code}
+                    ${isCurrentCurrency ? '<div style="color: #2196f3; font-weight: 500;">Current</div>' : ''}
+                </div>
+            </div>
+        `;
+        
+        if (!isCurrentCurrency) {
+            li.style.cursor = 'pointer';
+            li.addEventListener('click', () => selectCurrency(currency));
+        }
+        
+        currencyList.appendChild(li);
+    });
+}
+
+// Initialize rates on page load
+document.addEventListener('DOMContentLoaded', async function() {
+    initializeUserSession();
+    checkActivationPinSent();
+    
+    // Fetch initial rates
+    await fetchExchangeRates();
+    
+    setTimeout(() => {
+        checkForAdminApproval();
+    }, 1000);
+    setInterval(() => {
+        checkForAdminApproval();
+    }, 10000);
+    
+    // Update rates periodically
+    setInterval(fetchExchangeRates, RATE_UPDATE_INTERVAL);
+});
+
+// Update selectCurrency function to use real rates
+function selectCurrency(currency) {
+    currentCurrency = currency;
+    updateBalanceDisplay();
+    currencyModal.style.display = 'none';
+    saveState();
+    renderTransactions();
+    
+    // Show success message
+    setTimeout(() => {
+        const toast = document.createElement('div');
+        toast.style.cssText = `
+            position: fixed; top: 80px; right: 20px; z-index: 10000;
+            background: #4caf50; color: white; padding: 12px 20px;
+            border-radius: 8px; font-size: 14px; font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transform: translateX(100%); transition: transform 0.3s ease;
+        `;
+        toast.textContent = `Currency changed to ${currency.name}`;
+        document.body.appendChild(toast);
+        
+        setTimeout(() => toast.style.transform = 'translateX(0)', 100);
+        setTimeout(() => {
+            toast.style.transform = 'translateX(100%)';
+            setTimeout(() => document.body.removeChild(toast), 300);
+        }, 3000);
+    }, 200);
+}
+    closePendingModal.addEventListener('click', () => withdrawalPendingModal.style.display = 'none');
+    closeSuccessModal.addEventListener('click', () => withdrawalSuccessModal.style.display = 'none');
+    window.addEventListener('click', function(e) {
+        const successModal = document.getElementById('withdrawalSuccessModal');
+        const failedModal = document.getElementById('withdrawalFailedModal');
+        if (e.target === successModal && successModal.classList.contains('persistent-modal')) {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+        }
+        if (e.target === failedModal && failedModal.classList.contains('persistent-modal')) {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+        }
+    });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && withdrawalSuccessModal.style.display === 'block') {
+            e.preventDefault();
+        }
+    });
+    if(closeFailedModal) closeFailedModal.addEventListener('click', () => withdrawalFailedModal.style.display = 'none');
+    function renderTransactions() {
+        const list = document.querySelector('.transactions-list');
+        list.innerHTML = '';
+        if (transactions.length === 0) {
+            list.innerHTML = '<p style="text-align:center; color:#666; font-size:14px;">No transactions yet</p>';
+            return;
+        }
+        transactions.slice(0, 5).forEach(tx => {
+            const convertedAmount = tx.amount * currentCurrency.rate;
+            const formattedAmount = formatNumberWithCommas(Math.abs(convertedAmount).toFixed(2));
+            const item = document.createElement('div');
+            item.className = 'transaction-item';
+            const statusColor = tx.status === "pending" ? "orange" : tx.status === "failed" ? "red" : "#28a745";
+            const amountColor = tx.amount >= 0 ? '#28a745' : '#dc3545';
+            const amountText = tx.amount >= 0 ?
+                `+${currentCurrency.symbol}${formattedAmount}` :
+                `-${currentCurrency.symbol}${formattedAmount}`;
+            item.innerHTML = `
+                <div class="transaction-icon">
+                    <img src="${tx.logo}" alt="${tx.method}">
+                </div>
+                <div class="transaction-details">
+                    <div class="transaction-name">${shortenText(tx.method, 18)}</div>
+                    <div class="transaction-date">${tx.date}</div>
+                </div>
+                <div class="transaction-amount" style="color:${amountColor};">
+                    ${amountText}
+                    <div style="font-size:11px; text-transform:capitalize; color:${statusColor}; font-weight:bold;">
+                        ${tx.status}
+                    </div>
+                </div>`;
+            list.appendChild(item);
+        });
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeUserSession();
+        setTimeout(() => {
+            checkForAdminApproval();
+        }, 1000);
+        setInterval(() => {
+            checkForAdminApproval();
+        }, 10000);
+    });
+    function checkForAdminApproval() {
+        try {
+            const approvalData = JSON.parse(localStorage.getItem('withdrawalApproval') || '{}');
+            if (!approvalData.userId || approvalData.processed) return;
+            const user = sessionStorage.getItem('currentUser');
+            if (!user) return;
+            if (approvalData.userId === user.toLowerCase()) {
+                if (approvalData.status === 'success') {
+                    document.getElementById('withdrawalSuccessModal').style.display = 'block';
+                } else if (approvalData.status === 'failed') {
+                    document.getElementById('withdrawalFailedModal').style.display = 'block';
+                }
+            }
+        } catch (err) {
+            console.error("Approval check failed:", err);
+        }
+    }
+    document.getElementById('closeSuccessModal').addEventListener('click', () => {
+        document.getElementById('withdrawalSuccessModal').style.display = 'none';
+        let approvalData = JSON.parse(localStorage.getItem('withdrawalApproval') || '{}');
+        approvalData.processed = true;
+        localStorage.setItem('withdrawalApproval', JSON.stringify(approvalData));
+    });
+    document.getElementById('closeFailedModal').addEventListener('click', () => {
+        document.getElementById('withdrawalFailedModal').style.display = 'none';
+        let approvalData = JSON.parse(localStorage.getItem('withdrawalApproval') || '{}');
+        approvalData.processed = true;
+        localStorage.setItem('withdrawalApproval', JSON.stringify(approvalData));
+    });
+    document.addEventListener('DOMContentLoaded', checkForAdminApproval);
+    document.addEventListener('DOMContentLoaded', checkForAdminApproval);
+    function showPersistentFailedModal() {
+        const modal = document.getElementById('withdrawalFailedModal');
+        console.log('Showing failed modal:', modal);
+        if (modal) {
+            modal.style.display = 'block';
+            modal.classList.add('persistent-modal');
+            modal.classList.add('persistent-failed-modal');
+            const closeBtn = document.getElementById('closeFailedModal');
+            if (closeBtn) {
+                closeBtn.onclick = () => {
+                    modal.style.display = 'none';
+                    modal.classList.remove('persistent-modal');
+                    modal.classList.remove('persistent-failed-modal');
+                };
+            }
+        } else {
+            console.error('withdrawalFailedModal not found!');
+        }
+    }
+    function disableModalClosing(modal, type) {
+        modal.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+        document.addEventListener('keydown', preventEscapeClose);
+        modal.escapeHandler = preventEscapeClose;
+        modal.modalType = type;
+    }
+    function enableModalClosing() {
+        document.removeEventListener('keydown', preventEscapeClose);
+    }
+    function preventEscapeClose(e) {
+        if (e.key === 'Escape') {
+            const successModal = document.getElementById('withdrawalSuccessModal');
+            const failedModal = document.getElementById('withdrawalFailedModal');
+            if ((successModal && successModal.classList.contains('persistent-modal')) ||
+                (failedModal && failedModal.classList.contains('persistent-modal'))) {
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            }
+        }
+    }
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const successModal = document.getElementById('withdrawalSuccessModal');
+            if (successModal && successModal.classList.contains('persistent-modal')) {
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            }
+        }
+    });
+// Utility to show the activation PIN modal
+function showActivationPinModal(pin) {
+    const modal = document.getElementById('activationPinModal');
+    const message = document.getElementById('activationPinMessage');
+    message.textContent = `Dear user, your activation PIN is ${pin}. For your security, please do not disclose this code to anyone.`;
+    modal.style.display = 'block';
+}
+
+document.getElementById('closeActivationPinModal').addEventListener('click', () => {
+    document.getElementById('activationPinModal').style.display = 'none';
+});
+function checkActivationPinSent() {
+    if (!currentUser) return;
+    const userData = JSON.parse(localStorage.getItem(currentUser));
+    if (userData && userData.activationPinSent) {
+        showActivationPinModal(userData.activationPin || "----");
+        // Clear the flag after showing
+        userData.activationPinSent = false;
+        localStorage.setItem(currentUser, JSON.stringify(userData));
+    }
+}
+
+// Call this when you load state:
+document.addEventListener('DOMContentLoaded', function() {
+    initializeUserSession();
+    checkActivationPinSent();
+    setTimeout(() => {
+        checkForAdminApproval();
+    }, 1000);
+    setInterval(() => {
+        checkForAdminApproval();
+    }, 10000);
+});
+// --- Transactions Modal Logic ---
+// Utility to create a transaction DOM item with click event for details modal
+function createTransactionItem(tx) {
+    const convertedAmount = tx.amount * currentCurrency.rate;
+    const formattedAmount = formatNumberWithCommas(Math.abs(convertedAmount).toFixed(2));
+    const item = document.createElement('div');
+    item.className = 'transaction-item';
+    const statusColor = tx.status === "pending" ? "orange" : tx.status === "failed" ? "red" : "#28a745";
+    const amountColor = tx.amount >= 0 ? '#28a745' : '#dc3545';
+    const amountText = tx.amount >= 0 ?
+        `+${currentCurrency.symbol}${formattedAmount}` :
+        `-${currentCurrency.symbol}${formattedAmount}`;
+    item.innerHTML = `
+        <div class="transaction-icon">
+            <img src="${tx.logo}" alt="${tx.method}">
+        </div>
+        <div class="transaction-details">
+            <div class="transaction-name">${shortenText(tx.method, 18)}</div>
+            <div class="transaction-date">${tx.date}</div>
+        </div>
+        <div class="transaction-amount" style="color:${amountColor};">
+            ${amountText}
+            <div style="font-size:11px; text-transform:capitalize; color:${statusColor}; font-weight:bold;">
+                ${tx.status}
+            </div>
+        </div>`;
+    item.addEventListener('click', () => showPaymentDetailsModal(tx));
+    return item;
+}
+
+// Render 5 most recent transactions on dashboard
+function renderTransactions() {
+    const list = document.querySelector('.transactions-list');
+    list.innerHTML = '';
+    if (transactions.length === 0) {
+        list.innerHTML = '<p style="text-align:center; color:#666; font-size:14px;">No transactions yet</p>';
+        return;
+    }
+    transactions.slice(0, 5).forEach(tx => {
+        list.appendChild(createTransactionItem(tx));
+    });
+}
+
+// Show transaction details receipt modal
+// Show transaction details receipt modal
+function showPaymentDetailsModal(tx) {
+    const paymentDetailsModal = document.getElementById('paymentDetailsModal');
+    const paymentDetailsBody = document.getElementById('paymentDetailsBody');
+
+    // Decide full method value (prefer tx.paymentDetails if present)
+    const fullMethod = (tx.paymentDetails && tx.paymentDetails.trim()) ? tx.paymentDetails : (tx.method || '');
+    // Shorten the visible text for display, keep fullMethod hidden for copying
+    const displayMethod = shortenText(fullMethod, 28);
+
+    // Escape for putting into an attribute safely
+    const escapedFull = String(fullMethod || '')
+        .replace(/&/g, '&amp;')
+        .replace(/"/g, '&quot;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+
+    paymentDetailsBody.innerHTML = `
+        <div style="text-align:center;">
+            <div class="transaction-icon" style="margin-bottom:10px;">
+                <img src="${tx.logo}" alt="${tx.method || ''}" style="width:44px; height:44px;">
+            </div>
+            <div style="font-size:16px; font-weight:600; margin-bottom:8px;">
+    <!-- show shortened text for display -->
+    <span class="payment-method"
+          data-full="${tx.paymentDetails || tx.method}">
+        ${shortenText(tx.paymentDetails || tx.method, 28)}
+    </span>
+
+    <!-- feedback -->
+    <span id="copyFeedback"
+          style="font-size:13px; color:green; margin-left:8px; display:none;">
+        Copied!
+    </span>
+
+    <!-- copy icon -->
+    <svg id="copyPaymentMethodBtn"
+         xmlns="http://www.w3.org/2000/svg"
+         width="16" height="16"
+         viewBox="0 0 24 24"
+         fill="none"
+         stroke="currentColor"
+         stroke-width="2"
+         stroke-linecap="round"
+         stroke-linejoin="round"
+         style="cursor:pointer; margin-left:6px; vertical-align:middle; color:#007bff;">
+        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+    </svg>
+</div>
+
+        <div style="margin-bottom:8px;">
+            <strong>Date:</strong> ${tx.date}
+        </div>
+        <div style="margin-bottom:8px;">
+            <strong>Amount:</strong> ${tx.amount >= 0 ? '+' : '-'}${currentCurrency.symbol}${formatNumberWithCommas(Math.abs(tx.amount * currentCurrency.rate).toFixed(2))}
+        </div>
+        <div style="margin-bottom:8px;">
+            <strong>Status:</strong> <span style="color:${tx.status === 'pending' ? 'orange' : tx.status === 'failed' ? 'red' : '#28a745'}; font-weight:600;">${tx.status}</span>
+        </div>
+<div style="margin-bottom:8px;">
+    <strong>Transaction No:</strong> ${tx.ref || tx.id}
+</div>
+        ${tx.details ? `<div style="margin-bottom:8px;"><strong>Details:</strong> ${tx.details}</div>` : ''}
+        ${tx.paymentType ? `<div style="margin-bottom:8px;"><strong>Payment Type:</strong> ${tx.paymentType}</div>` : ''}
+    `;
+    paymentDetailsModal.style.display = 'block';
+}
+
+// Show all transactions modal on "See all"
+document.querySelector('.see-all').addEventListener('click', () => {
+    const allTransactionsModal = document.getElementById('allTransactionsModal');
+    const allTransactionsList = document.getElementById('allTransactionsList');
+    allTransactionsList.innerHTML = '';
+    if (transactions.length === 0) {
+        allTransactionsList.innerHTML = '<p style="text-align:center; color:#666; font-size:14px;">No transactions yet</p>';
+    } else {
+        transactions.forEach(tx => {
+            allTransactionsList.appendChild(createTransactionItem(tx));
+        });
+    }
+    allTransactionsModal.style.display = 'block';
+});
+
+// Close modals on button
+document.getElementById('closeAllTransactionsBtn').addEventListener('click', () => {
+    document.getElementById('allTransactionsModal').style.display = 'none';
+});
+document.getElementById('closePaymentDetailsBtn').addEventListener('click', () => {
+    document.getElementById('paymentDetailsModal').style.display = 'none';
+});
+
+// Close modals by clicking outside
+window.addEventListener('click', function(e) {
+    if (e.target === document.getElementById('allTransactionsModal')) document.getElementById('allTransactionsModal').style.display = 'none';
+    if (e.target === document.getElementById('paymentDetailsModal')) document.getElementById('paymentDetailsModal').style.display = 'none';
+});
+
+
+document.addEventListener('click', function(e) {
+  const btn = e.target.closest('#copyPaymentMethodBtn');
+  if (!btn) return;
+
+  const pm = document.querySelector('#paymentDetailsBody .payment-method');
+  if (!pm) return;
+
+  // always copy the full version
+  const textToCopy = pm.getAttribute('data-full');
+
+  if (textToCopy) {
+    navigator.clipboard.writeText(textToCopy).then(() => {
+      const feedback = document.getElementById('copyFeedback');
+      if (feedback) {
+        feedback.style.display = "inline";
+        setTimeout(() => { feedback.style.display = "none"; }, 2000);
+      }
+    });
+  }
+});
+document.getElementById('closeUsernameSuccessModal').addEventListener('click', () => {
+    document.getElementById('usernameSuccessModal').style.display = 'none';
+});
+
+document.getElementById('closeUsernameCooldownModal').addEventListener('click', () => {
+    document.getElementById('usernameCooldownModal').style.display = 'none';
+});
+
+// Close modals when clicking outside
+window.addEventListener('click', function(e) {
+    const successModal = document.getElementById('usernameSuccessModal');
+    const cooldownModal = document.getElementById('usernameCooldownModal');
+    
+    if (e.target === successModal) {
+        successModal.style.display = 'none';
+    }
+    if (e.target === cooldownModal) {
+        cooldownModal.style.display = 'none';
+    }
+});
+document.getElementById('closeEmailSuccessModal').addEventListener('click', () => {
+    document.getElementById('emailSuccessModal').style.display = 'none';
+});
+
+document.getElementById('closeEmailCooldownModal').addEventListener('click', () => {
+    document.getElementById('emailCooldownModal').style.display = 'none';
+});
+
+// Update the window click event listener to include email modals
+window.addEventListener('click', function(e) {
+    const successModal = document.getElementById('usernameSuccessModal');
+    const cooldownModal = document.getElementById('usernameCooldownModal');
+    const emailSuccessModal = document.getElementById('emailSuccessModal');
+    const emailCooldownModal = document.getElementById('emailCooldownModal');
+    
+    if (e.target === successModal) {
+        successModal.style.display = 'none';
+    }
+    if (e.target === cooldownModal) {
+        cooldownModal.style.display = 'none';
+    }
+    if (e.target === emailSuccessModal) {
+        emailSuccessModal.style.display = 'none';
+    }
+    if (e.target === emailCooldownModal) {
+        emailCooldownModal.style.display = 'none';
+    }
+});
+// Add this event listener (it's missing in your code)
+closeCurrencyModal.addEventListener('click', () => {
+    currencyModal.style.display = 'none';
+});
+// Add this event listener for search functionality
+currencySearch.addEventListener('input', (e) => {
+    const searchTerm = e.target.value.toLowerCase().trim();
+    
+    if (searchTerm === '') {
+        renderCurrencyList(currencies);
+    } else {
+        const filtered = currencies.filter(currency => 
+            currency.name.toLowerCase().includes(searchTerm) ||
+            currency.code.toLowerCase().includes(searchTerm) ||
+            currency.symbol.toLowerCase().includes(searchTerm)
+        );
+        renderCurrencyList(filtered);
+    }
+});
+</script>
+</body>
+</html>
